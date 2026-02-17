@@ -1,0 +1,1256 @@
+/* ESTILOS PARA PÁGINAS PROYECTO*/
+
+:root {
+  /* Colores específicos de autenticación */
+  --auth-card-bg: #ffffff;
+  --auth-border-color: #e5e7eb;
+  --auth-success-color: #10b981;
+  --auth-error-color: #ef4444;
+}
+
+
+/*CONTENEDOR Y TARJETA DE AUTENTICACIÓN*/
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  min-height: auto;
+}
+
+.auth-card {
+  background-color: var(--auth-card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 500px;
+  padding: var(--spacing-xl);
+  position: relative;
+  animation: authCardEnter 0.5s ease-out forwards;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.auth-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: var(--spacing-md);
+  border: 3px solid var(--color-accent);
+  object-fit: cover;
+}
+
+.auth-header h1 {
+  color: var(--color-dark);
+  font-size: var(--text-xl);
+  margin: 0;
+  font-weight: 600;
+}
+
+/* FORMULARIO DE AUTENTICACIÓN*/
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.auth-form .form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-dark);
+  font-weight: 500;
+  font-size: var(--text-sm);
+}
+
+.auth-form input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1px solid var(--auth-border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  transition: all var(--transition-fast);
+  background-color: #ffffff;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.auth-form input.error {
+  border-color: var(--auth-error-color);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* BOTONES Y ACCIONES*/
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary:disabled:hover {
+  background-color: var(--color-accent);
+  transform: none;
+}
+
+.btn-back {
+  color: var(--color-dark);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
+}
+
+.btn-back:hover {
+  color: var(--color-accent);
+}
+
+.btn-back::before {
+  content: "←";
+  margin-right: var(--spacing-xs);
+}
+
+/* CONTROLES ESPECIALES*/
+
+.password-toggle {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-xs);
+}
+
+.password-toggle input[type="checkbox"] {
+  width: auto;
+  margin-right: var(--spacing-xs);
+  accent-color: var(--color-accent);
+}
+
+.password-toggle label {
+  display: inline;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-gray);
+  cursor: pointer;
+}
+
+/* ENLACES Y NAVEGACIÓN */
+
+.auth-links {
+  margin-top: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.auth-links a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
+}
+
+.auth-links a:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+.auth-footer {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-gray);
+  font-size: var(--text-sm);
+}
+
+/* MENSAJES Y VALIDACIÓN */
+
+.validation-message {
+  font-size: var(--text-sm);
+  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+.validation-message.error,
+.error-message,
+.field-error {
+  color: var(--auth-error-color);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.field-error-highlight,
+input.field-error-highlight,
+select.field-error-highlight {
+  border: 1px solid var(--auth-error-color) !important;
+  background-color: rgba(239, 68, 68, 0.05);
+  box-shadow: 0 0 0 1px var(--auth-error-color);
+}
+
+.validation-message.success {
+  color: var(--auth-success-color);
+}
+
+.result-message {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.result-message.success {
+  background-color: #d1fae5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  opacity: 1;
+}
+
+.result-message.error,
+.registro-mensaje.error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  opacity: 1;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.registro-mensaje {
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ESTADOS DE CARGA OJO */
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 0.8s linear infinite;
+  margin-right: var(--spacing-xs);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-form input:focus,
+.auth-form textarea:focus,
+.btn-primary:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.password-toggle input[type="checkbox"]:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Mejoras para navegación por teclado, se agrega ya que se considera util */
+.auth-links a:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* AUI VAN LAS ANIMACIONES Y TRANSICIONES*/
+
+@keyframes authCardEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* AQUI SE AGREGA EL DISEÑO RESPONSIVE */
+
+@media (max-width: 768px) {
+  .auth-card {
+    padding: var(--spacing-lg);
+    margin: var(--spacing-sm);
+  }
+  
+  .auth-container {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: var(--spacing-md);
+    margin: var(--spacing-xs);
+  }
+  
+  .auth-logo {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .auth-form input {
+    padding: var(--spacing-sm);
+  }
+  
+  .auth-header h1 {
+    font-size: var(--text-lg);
+  }
+  
+  .btn-primary {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .auth-container {
+    padding: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 320px) {
+  .auth-card {
+    padding: var(--spacing-sm);
+    margin: var(--spacing-xs);
+  }
+  
+  .auth-container {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* AQUI SE AGREGA EL ESTILO ESPECÍFICO DE REGISTRO */
+
+/* Sección de registro */
+.registro-section {
+  width: 100%;
+  max-width: 950px;
+  margin: 2rem auto;
+  padding: 0 var(--spacing-md);
+  animation: authCardEnter 0.8s ease-out;
+}
+
+.registro-container {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl) var(--spacing-xxl);
+  transition: box-shadow 0.3s ease;
+}
+
+.registro-container:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.registro-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  color: var(--color-primary);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  bottom: -10px;
+  left: 25%;
+  border-radius: 2px;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.registro-container:hover .section-title::after {
+  width: 70%;
+  left: 15%;
+}
+
+.section-subtitle {
+  color: var(--color-gray);
+  font-size: var(--text-md);
+}
+
+/* AQUI SE AGREGA EL Selector de tipo de usuario */
+.role-selector {
+  margin-bottom: var(--spacing-xl);
+  background-color: #f8f9fa;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.role-selector:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.role-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.role-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--color-gray);
+  font-weight: 500;
+  outline: none;
+}
+
+.role-tab:hover {
+  border-color: var(--color-accent);
+  background-color: rgba(102, 126, 234, 0.05);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.role-tab.active {
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.role-tab.active .tab-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.tab-icon {
+  font-size: var(--text-lg);
+  transition: transform 0.3s ease;
+}
+
+.role-description {
+  color: var(--color-gray);
+  font-size: var(--text-sm);
+  margin-top: var(--spacing-sm);
+  text-align: center;
+  font-style: italic;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.role-selector:hover .role-description {
+  opacity: 1;
+}
+
+/* AQUI SE AGREGA EL Selector de tipo de usuario */
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-xl);
+}
+
+/* Aqui se agrega Efectos  para campos del formulario de registro */
+.registro-container .auth-form input,
+.registro-container .auth-form select,
+.registro-container .auth-form textarea,
+.registro-container .registro-form input,
+.registro-container .registro-form select,
+.registro-container .registro-form textarea {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--text-md);
+  border: 2px solid var(--auth-border-color);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  background-color: #fafbfc;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.registro-container .auth-form input:hover,
+.registro-container .auth-form select:hover,
+.registro-container .auth-form textarea:hover,
+.registro-container .registro-form input:hover,
+.registro-container .registro-form select:hover,
+.registro-container .registro-form textarea:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.15);
+  background-color: #ffffff;
+}
+
+.registro-container .auth-form input:focus,
+.registro-container .auth-form select:focus,
+.registro-container .auth-form textarea:focus,
+.registro-container .registro-form input:focus,
+.registro-container .registro-form select:focus,
+.registro-container .registro-form textarea:focus {
+  border-color: var(--color-accent);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 4px 12px rgba(102, 126, 234, 0.2);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+/* Aqui agregamos los estilos para el botón de registro con efectos del login */
+.registro-container .btn-primary,
+.registro-container .registro-submit-btn {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.registro-container .btn-primary::before,
+.registro-container .registro-submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+  border-radius: var(--radius-md);
+  z-index: -1;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  opacity: 0.95;
+}
+
+.registro-container .btn-primary:hover:not(:disabled),
+.registro-container .registro-submit-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  color: white;
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.registro-container .btn-primary:hover:not(:disabled)::before,
+.registro-container .registro-submit-btn:hover:not(:disabled)::before {
+  transform: translateY(0);
+}
+
+.registro-container .btn-primary:active,
+.registro-container .registro-submit-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.registro-container .btn-primary:disabled,
+.registro-container .registro-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.registro-container .btn-primary:disabled:hover,
+.registro-container .registro-submit-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* AQUI AGREGAMOS LOS AJUSTE ESPECÍFICO DEL TAMAÑO DEL BOTÓN REGISTRAR USUARIO */
+.registro-container .registro-submit-btn {
+  padding: calc(var(--spacing-md) * 0.8) calc(var(--spacing-xl) * 0.9);
+  font-size: calc(var(--text-md) * 0.9);
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+/* Efectos adicionales */
+.registro-container .auth-form label,
+.registro-container .registro-form label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-dark);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  transition: color 0.3s ease;
+}
+
+.registro-container .form-group:hover label {
+  color: var(--color-accent);
+}
+
+/* ORGANIZACIÓN MEJORADA DEL FORMULARIO */
+
+/* Contenedor principal de secciones del formulario */
+.registro-container .form-sections {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  gap: 3rem;
+}
+
+/* Secciones del formulario con mejor diseño */
+.registro-container .form-section {
+  margin-bottom: 4rem;
+  padding: 2.5rem var(--spacing-xl);
+  background-color: #f8f9fa;
+  border-radius: var(--radius-lg);
+  border-left: 6px solid var(--color-accent);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.registro-container .form-section:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Headers de sección */
+.registro-container .section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.registro-container .section-header h3 {
+  color: var(--color-primary);
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.registro-container .section-icon {
+  color: var(--color-accent);
+  font-size: var(--text-xl);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(102, 126, 234, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.registro-container .form-section:hover .section-icon {
+  transform: scale(1.1);
+  background-color: rgba(102, 126, 234, 0.2);
+}
+
+/* distribución en dos columnas */
+.registro-container .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  align-items: start;
+}
+
+/* Sobreescribir estilos de form-row */
+.registro-container .form-row .form-group {
+  flex: none;
+  min-width: unset;
+  margin-bottom: 0;
+}
+
+/* Estilos  para form-group */
+.registro-container .form-group {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.registro-container .form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-dark);
+  font-weight: 600;
+  font-size: var(--text-md);
+  transition: color 0.3s ease;
+}
+
+.registro-container .form-group label .required {
+  color: var(--auth-error-color);
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.registro-container .form-group:hover label {
+  color: var(--color-accent);
+}
+
+/* Contenedores de input mejorados */
+.registro-container .input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.registro-container .input-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--color-gray);
+  font-size: var(--text-md);
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+.registro-container .input-container:hover .input-icon {
+  color: var(--color-accent);
+}
+
+/* Ajustar padding de inputs para iconos */
+.registro-container .input-container input,
+.registro-container .input-container select,
+.registro-container .input-container textarea {
+  padding-left: calc(var(--spacing-xl) + 10px) !important;
+}
+
+/* Responsive design para form-row */
+@media (max-width: 768px) {
+  .registro-container .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .registro-container .form-sections {
+    padding: var(--spacing-md);
+  }
+  
+  .registro-container .form-section {
+    padding: var(--spacing-lg);
+    margin-bottom: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .registro-container .form-sections {
+    padding: var(--spacing-sm);
+  }
+  
+  .registro-container .form-section {
+    padding: var(--spacing-md);
+  }
+  
+  .registro-container .section-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .registro-container .form-row {
+    gap: var(--spacing-md);
+  }
+}
+
+/* SEPARACIÓN ENTRE TARJETAS  */
+.registro-section .registro-container .form-sections .form-section {
+  margin-bottom: 4rem !important;
+  margin-top: 2rem !important;
+}
+
+.registro-section .registro-container .form-sections .form-section:first-child {
+  margin-top: 0 !important;
+}
+
+.registro-section .registro-container .form-sections .form-section:last-child {
+  margin-bottom: 2rem !important;
+}
+
+/* Agregar espacio visual  */
+.registro-section .registro-container .form-sections .form-section + .form-section {
+  border-top: 4px solid transparent;
+}
+
+/* CENTRADO  DEL BOTÓN REGISTRAR USUARIO */
+.registro-container .form-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* ESTILOS ESPECÍFICOS DE RECUPERAR CONTRASEÑA */
+
+
+.recovery-section {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 var(--spacing-md);
+  animation: authCardEnter 0.8s ease-out;
+}
+
+.recovery-section .auth-card {
+  max-width: 550px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recovery-section .auth-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+.recovery-section .auth-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.recovery-section .section-title {
+  color: var(--color-primary);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+  display: inline-block;
+}
+
+.recovery-section .section-title::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  bottom: -10px;
+  left: 25%;
+  border-radius: 2px;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.recovery-section .auth-card:hover .section-title::after {
+  width: 70%;
+  left: 15%;
+}
+
+
+.recovery-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background-color: #f8f9fa;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.recovery-steps .step {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.recovery-steps .step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -15px;
+  width: 30px;
+  height: 2px;
+  background-color: #e5e7eb;
+  transition: background-color 0.3s ease;
+}
+
+.recovery-steps .step.active::after {
+  background-color: var(--color-accent);
+}
+
+.recovery-steps .step-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: var(--color-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: all 0.3s ease;
+}
+
+.recovery-steps .step.active .step-number {
+  background-color: var(--color-accent);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.recovery-steps .step-text {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-gray);
+  transition: color 0.3s ease;
+}
+
+.recovery-steps .step.active .step-text {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Formularios de recuperación que fueron mejorados */
+.recovery-form {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.recovery-form:not(.active) {
+  display: none;
+}
+
+/* Efectos mejorados para campos del formulario de recuperación */
+.recovery-section .recovery-form input,
+.recovery-section .recovery-form select,
+.recovery-section .recovery-form textarea {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--text-md);
+  border: 2px solid var(--auth-border-color);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  background-color: #fafbfc;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.recovery-section .recovery-form input:hover,
+.recovery-section .recovery-form select:hover,
+.recovery-section .recovery-form textarea:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.15);
+  background-color: #ffffff;
+}
+
+.recovery-section .recovery-form input:focus,
+.recovery-section .recovery-form select:focus,
+.recovery-section .recovery-form textarea:focus {
+  border-color: var(--color-accent);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 4px 12px rgba(102, 126, 234, 0.2);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+/* padding de inputs para iconos en recuperación */
+.recovery-section .input-container input,
+.recovery-section .input-container select,
+.recovery-section .input-container textarea {
+  padding-left: calc(var(--spacing-xl) + 10px) !important;
+}
+
+/* Efectos para labels en recuperación */
+.recovery-section .recovery-form label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-dark);
+  font-weight: 600;
+  font-size: var(--text-md);
+  transition: color 0.3s ease;
+}
+
+.recovery-section .form-group:hover label {
+  color: var(--color-accent);
+}
+
+/* Estilos para iconos de input en recuperación */
+.recovery-section .input-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--color-gray);
+  font-size: var(--text-md);
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+.recovery-section .input-container:hover .input-icon {
+  color: var(--color-accent);
+}
+
+/* Botones de recuperación con efectos similares al registro, se dejan para una mejor experiencia */
+.recovery-section .btn-primary,
+.recovery-section .recovery-submit-btn {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.recovery-section .btn-primary::before,
+.recovery-section .recovery-submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+  border-radius: var(--radius-md);
+  z-index: -1;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  opacity: 0.95;
+}
+
+.recovery-section .btn-primary:hover:not(:disabled),
+.recovery-section .recovery-submit-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  color: white;
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.recovery-section .btn-primary:hover:not(:disabled)::before,
+.recovery-section .recovery-submit-btn:hover:not(:disabled)::before {
+  transform: translateY(0);
+}
+
+/* Botones secundarios de recuperación */
+.recovery-section .btn-secondary {
+  background-color: #f8f9fa;
+  color: var(--color-gray);
+  border: 2px solid var(--auth-border-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: var(--spacing-sm);
+}
+
+.recovery-section .btn-secondary:hover {
+  background-color: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.recovery-section .btn-link {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: underline;
+}
+
+.recovery-section .btn-link:hover {
+  color: var(--color-secondary);
+}
+
+/* Información adicional */
+.recovery-section .code-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: rgba(102, 126, 234, 0.1);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+}
+
+.recovery-section .password-requirements {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: #f8f9fa;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--color-accent);
+}
+
+.recovery-section .password-requirements h4 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-primary);
+  font-size: var(--text-md);
+}
+
+.recovery-section .password-requirements ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recovery-section .password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--text-sm);
+  color: var(--color-gray);
+}
+
+.recovery-section .password-requirements li i {
+  color: var(--auth-error-color);
+  transition: color 0.3s ease;
+}
+
+.recovery-section .password-requirements li.valid i {
+  color: var(--auth-success-color);
+}
+
+/* Estilos adicionales para elementos específicos de recuperación */
+.recovery-section .secondary-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid #e5e7eb;
+}
+
+.recovery-section .verification-code-container {
+  position: relative;
+}
+
+.recovery-section .error-message {
+  color: var(--auth-error-color);
+  font-size: var(--text-sm);
+  margin-top: var(--spacing-xs);
+  display: block;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.recovery-section .error-message:not(:empty) {
+  opacity: 1;
+}
+
+.recovery-section .required {
+  color: var(--auth-error-color);
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+/* Responsive para web de recuperación */
+@media (max-width: 768px) {
+  .recovery-section {
+    max-width: 100%;
+    margin: 1rem auto;
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .recovery-steps {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .recovery-steps .step:not(:last-child)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .recovery-section .auth-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .recovery-steps .step-text {
+    display: none;
+  }
+  
+  .recovery-section .secondary-actions {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}

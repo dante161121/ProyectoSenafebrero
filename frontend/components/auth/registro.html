@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<!-- INICIO: ENCABEZADO DEL DOCUMENTO HTML -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-wid            <!-- Campos adicionales para Administrador -->h,         <!-- Panel de usuarios registrados -->      <!-- Panel de usuarios registrados -->initial-scale=1.0">
+  <title>Registro de Usuario - IN OUT MANAGER</title>
+  <meta name="description" content="Registro de usuarios para el sistema IN OUT MANAGER - Complete sus datos para acceder al sistema.">
+  <meta name="keywords" content="registro, usuario, empleado, administrador, IN OUT MANAGER">
+  
+  <!-- Precargar recursos críticos -->
+  <link rel="preload" href="../../assets/img/icon.jpg" as="image">
+  <link rel="preload" href="../../assets/css/styles.css?v=20250702003" as="style">
+  <link rel="preload" href="../../assets/js/script.js" as="script">
+  
+  <link rel="stylesheet" href="../../assets/css/styles.css?v=20250702003">
+  <link rel="stylesheet" href="../../assets/css/footer-styles.css?v=20250702004">
+  <link rel="stylesheet" href="../../assets/css/auth.css?v=20250108008">
+  <link rel="icon" type="image/jpeg" href="../../assets/img/icon.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script type="module" src="../../assets/js/path-manager.js"></script>
+  <script type="module" src="../../assets/js/session-manager.js"></script>
+  <script type="module" src="../../assets/js/security-manager.js"></script>
+  <script type="module" src="../../assets/js/notification-manager.js"></script>
+  <script type="module" src="../../assets/js/script.js"></script>
+  <script type="module" src="../../assets/js/registro.js"></script>
+</head>
+
+<!-- FIN: ENCABEZADO DEL DOCUMENTO HTML-->
+
+
+<body>
+
+  <!-- INICIO: HEADER Y NAVEGACIÓN PRINCIPAL -->
+ 
+  <header class="site-header">
+    <div class="header-title">
+      <h1>IN OUT MANAGER</h1>
+      <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Abrir menú">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <ul id="mainNavList" class="nav-menu-list">
+        <li class="nav-logo">
+          <img src="../../assets/img/icon.jpg" alt="Logo de IN OUT MANAGER" class="icon" loading="eager">
+        </li>
+        <li class="nav-items-container">
+          <ul class="nav-items-group">
+            <li class="nav-item"><a href="../../proyectopages/index.html#tecnologias" class="nav-btn btn-animated">Tecnologías</a></li>
+            <li class="nav-item"><a href="../../proyectopages/index.html#nosotros" class="nav-btn btn-animated">Sobre Nosotros</a></li>
+            <li class="nav-item"><a href="../../proyectopages/index.html#portfolio" class="nav-btn btn-animated">Portfolio</a></li>
+            <li class="nav-item"><a href="../../proyectopages/index.html#contacto" class="nav-btn btn-animated">Contacto</a></li>
+          </ul>
+        </li>
+        <li class="auth-buttons-container">
+          <a href="registro.html" class="nav-btn auth-btn register-btn btn-animated" id="registerBtn">Registrarse</a>
+          <a href="login.html" class="nav-btn auth-btn login-btn btn-animated" id="loginBtn">Ingresar</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  
+  <!-- FIN: HEADER Y NAVEGACIÓN PRINCIPAL-->
+
+
+
+  <!-- INICIO: CONTENIDO PRINCIPAL-->
+
+  <main class="site-content auth-content">
+   
+    <!-- INICIO: SECCIÓN DE REGISTRO-->
+  
+    <section id="registro" class="registro-section auth-section animate-entry">
+      <div class="auth-container">
+        <div class="registro-container">
+        <div class="registro-header">
+          <h2 class="section-title">Registro de Usuario</h2>
+          <p class="section-subtitle">Complete sus datos para acceder al sistema</p>
+        </div>
+
+        <!-- Selector de Tipo de Usuario -->
+        <div class="role-selector">
+          <div class="role-tabs" role="tablist" aria-label="Tipo de usuario">
+            <button type="button" class="role-tab active" data-role="empleado" id="tab-empleado" role="tab" aria-selected="true" tabindex="0">
+              <span class="tab-icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+              <span class="tab-text">Empleado</span>
+            </button>
+            <button type="button" class="role-tab" data-role="administrador" id="tab-admin" role="tab" aria-selected="false" tabindex="-1">
+              <span class="tab-icon" aria-hidden="true"><i class="fas fa-cog"></i></span>
+              <span class="tab-text">Administrador</span>
+            </button>
+          </div>
+          <div class="role-description" id="roleDescription">
+            <span>Complete los campos para registro de empleado.</span>
+          </div>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <form id="registroForm" class="registro-form card-effect">
+          <input type="hidden" id="tipoUsuario" name="tipoUsuario" value="empleado">
+          
+          <div class="form-sections">
+            <!-- Sección de datos personales común para ambos roles -->
+            <div class="form-section personal-info">
+              <div class="section-header">
+                <span class="section-icon"><i class="fas fa-user-circle"></i></span>
+                <h3>Información Personal</h3>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="nombreCompleto">Nombre Completo <span class="required">*</span></label>
+                  <div class="input-container">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="nombreCompleto" name="nombreCompleto" required 
+                          placeholder="Ingrese su nombre completo"
+                          pattern="[A-Za-zÀ-ÿ\s]{2,50}"
+                          title="Solo letras y espacios, entre 2 y 50 caracteres">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="numeroDocumento">Número de Documento <span class="required">*</span></label>
+                  <div class="input-container">
+                    <i class="fas fa-id-card input-icon"></i>
+                    <input type="text" id="numeroDocumento" name="numeroDocumento" required 
+                          placeholder="Ej: 12345678"
+                          pattern="[0-9]{6,12}"
+                          title="Solo números, entre 6 y 12 dígitos">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edad">Edad</label>
+                  <div class="input-container">
+                    <i class="fas fa-birthday-cake input-icon"></i>
+                    <input type="number" id="edad" name="edad" 
+                          placeholder="Edad" min="18" max="100"
+                          title="Edad entre 18 y 100 años">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="direccion">Dirección de Domicilio</label>
+                  <div class="input-container">
+                    <i class="fas fa-home input-icon"></i>
+                    <input type="text" id="direccion" name="direccion" 
+                          placeholder="Ingrese su dirección completa"
+                          maxlength="100"
+                          title="Dirección de residencia completa">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="telefono">Número de Teléfono</label>
+                  <div class="input-container">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="telefono" name="telefono" 
+                          placeholder="+57 123 456 7890"
+                          pattern="[\+]?[0-9\s\-\(\)]{7,15}"
+                          title="Formato: +57 123 456 7890">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="correoElectronico">Correo Electrónico <span class="required">*</span></label>
+                  <div class="input-container">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="correoElectronico" name="correoElectronico" required 
+                          placeholder="usuario@correo.com"
+                          title="Correo electrónico válido">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sección de información laboral para empleados -->
+            <div class="form-section work-info">
+              <div class="section-header">
+                <span class="section-icon"><i class="fas fa-briefcase"></i></span>
+                <h3>Información Laboral</h3>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fechaIngreso">Fecha de Ingreso a Laborar</label>
+                  <div class="input-container">
+                    <i class="fas fa-calendar-alt input-icon"></i>
+                    <input type="date" id="fechaIngreso" name="fechaIngreso"
+                          title="Fecha de inicio laboral">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="cargo">Cargo/Vinculación Laboral</label>
+                  <div class="input-container">
+                    <i class="fas fa-briefcase input-icon"></i>
+                    <select id="cargo" name="cargo">
+                      <option value="">Seleccione un cargo</option>
+                      <option value="vendedor">Vendedor</option>
+                      <option value="mantenimiento">Mantenimiento</option>
+                      <option value="sistemas">Sistemas</option>
+                      <option value="contador">Contador</option>
+                      <option value="marketing">Marketing</option>
+                      <option value="gerente">Gerente</option>
+                    </select>
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="horarioAsignado">Horario Asignado</label>
+                  <div class="input-container">
+                    <i class="fas fa-clock input-icon"></i>
+                    <select id="horarioAsignado" name="horarioAsignado">
+                      <option value="">Seleccione un horario</option>
+                      <option value="mañana">Mañana (6:00 AM - 2:00 PM)</option>
+                      <option value="tarde">Tarde (2:00 PM - 10:00 PM)</option>
+                      <option value="noche">Noche (10:00 PM - 6:00 AM)</option>
+                      <option value="completo">Tiempo completo (8:00 AM - 5:00 PM)</option>
+                      <option value="medio">Medio tiempo (4 horas)</option>
+                      <option value="flexible">Horario flexible</option>
+                    </select>
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sección de credenciales -->
+            <div class="form-section credentials">
+              <div class="section-header">
+                <span class="section-icon"><i class="fas fa-key"></i></span>
+                <h3>Credenciales de Acceso</h3>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="password">Contraseña <span class="required">*</span></label>
+                  <div class="input-container">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" required 
+                          placeholder="Ingrese su contraseña"
+                          minlength="6"
+                          title="Mínimo 6 caracteres">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="confirmPassword">Confirmar Contraseña <span class="required">*</span></label>
+                  <div class="input-container">
+                    <i class="fas fa-key input-icon"></i>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                          placeholder="Confirme su contraseña"
+                          minlength="6"
+                          title="Debe coincidir con la contraseña">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!----Campos adicionales para Administrador ---------->
+            <div id="adminFields" class="admin-fields form-section" style="display: none;">
+              <div class="section-header admin-header">
+                <span class="section-icon admin-icon">⚙️</span>
+                <h3>Información Adicional de Administrador</h3>
+                <p class="admin-desc">Solo los administradores deben completar estos campos.</p>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="codigoAdmin">Código de Administrador <span class="required">*</span></label>
+                  <div class="input-container">
+                    <i class="fas fa-shield-alt input-icon"></i>
+                    <input type="number" id="codigoAdmin" name="codigoAdmin" 
+                          placeholder="Ingrese un número de máximo 4 dígitos"
+                          title="Número de máximo 4 dígitos"
+                          maxlength="4"
+                          pattern="[0-9]{1,4}"
+                          aria-required="true">
+                    <span class="input-focus-effect"></span>
+                  </div>
+                  <div class="password-requirements">
+                    <small>El código debe tener:</small>
+                    <ul class="requirements-list">
+                      <li id="digits-check"><i class="fas fa-times-circle"></i> Máximo 4 dígitos numéricos</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="departamento">Departamento</label>
+                  <div class="input-container">
+                    <i class="fas fa-building input-icon"></i>
+                    <select id="departamento" name="departamento">
+                      <option value="">Seleccione un departamento</option>
+                      <option value="sistemas">Sistemas</option>
+                      <option value="rrhh">Recursos Humanos</option>
+                      <option value="operaciones">Operaciones</option>
+                    </select>
+                    <span class="input-focus-effect"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-submit">
+            <button type="submit" class="registro-submit-btn">
+              <span class="btn-icon"><i class="fas fa-user-plus"></i></span>
+              <span class="btn-text">Registrar Usuario</span>
+              <div class="btn-shine"></div>
+            </button>
+          </div>
+          
+          <div class="auth-links">
+            <a href="login.html" class="auth-link"><i class="fas fa-sign-in-alt"></i> ¿Ya tienes cuenta? Inicia sesión</a>
+            <a href="../../proyectopages/index.html" class="auth-link"><i class="fas fa-home"></i> Volver al inicio</a>
+          </div>
+
+          <!-- Mensaje de resultado -->
+          <div id="registroMensaje" class="registro-mensaje" style="display: none;"></div>
+          <div class="form-help-text">
+            <small>Los campos marcados con <span class="required">*</span> son obligatorios.</small>
+          </div>
+        </form>
+
+        <!---Panel de usuarios registrados ------>
+        <div class="users-panel" id="usersPanel" style="display: none;">
+          <div class="panel-header">
+            <h3><i class="fas fa-users"></i> Usuarios Registrados</h3>
+            <button type="button" class="panel-toggle" id="togglePanel">
+              <i class="fas fa-chevron-down"></i>
+              <span>Mostrar/Ocultar Lista</span>
+            </button>
+          </div>
+          <div class="users-list" id="usersList">
+            <!-- Los usuarios se mostrarán aquí -->
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- INICIO: FOOTER SIMPLE DE REDES SOCIALES  -->
+
+  <footer class="site-footer">
+    <div class="social-footer-container">
+      <div class="social-media-footer">
+        <a href="#" class="social-icon-footer" aria-label="Facebook">
+          <img src="../../assets/img/facebook.jpg" alt="Facebook" class="social-img">
+        </a>
+        <a href="#" class="social-icon-footer" aria-label="Instagram">
+          <img src="../../assets/img/instagram.jpg" alt="Instagram" class="social-img">
+        </a>
+        <a href="#" class="social-icon-footer" aria-label="TikTok">
+          <img src="../../assets/img/tiktok.jpg" alt="TikTok" class="social-img">
+        </a>
+        <a href="mailto:info@inoutmanager.com" class="social-icon-footer" aria-label="Correo">
+          <i class="fas fa-envelope email-icon"></i>
+        </a>
+      </div>
+      <p class="copyright-text">© 2025 IN OUT MANAGER</p>
+    </div>
+  </footer>
+  
+  <!-- FIN: FOOTER  -->
+  
+</body>
+</html>

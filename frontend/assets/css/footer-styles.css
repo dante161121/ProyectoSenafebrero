@@ -1,0 +1,165 @@
+/* ESTILOS DEL FOOTER FOOTER SIMPLE DE REDES SOCIALES*/
+
+.site-footer {
+  background: linear-gradient(135deg, #0e1a4f 0%, #1c2b5e 100%);
+  color: white;
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.site-footer::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0e1a4f, #667eea, #0e1a4f);
+  opacity: 0.8;
+}
+
+.social-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.social-media-footer {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.social-icon-footer {
+  display: block;
+  position: relative;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.social-icon-footer:hover {
+  transform: translateY(-8px) scale(1.05);
+}
+
+.social-icon-footer::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  bottom: -10px;
+  left: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 80%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.social-icon-footer:hover::after {
+  opacity: 1;
+}
+
+.social-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.social-icon-footer:hover .social-img {
+  border-color: #667eea;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.email-icon {
+  font-size: 32px;
+  color: white;
+  background-color: #4a5568;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  line-height: 1;
+  padding: 0;
+}
+
+.email-icon::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.social-icon-footer:hover .email-icon {
+  background-color: #667eea;
+  border-color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.copyright-text {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  margin: 0;
+}
+
+/* Estilos responsivos para el footer */
+@media (max-width: 768px) {
+  .social-media-footer {
+    gap: 1.5rem;
+  }
+  
+  .social-img,
+  .email-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .email-icon {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-media-footer {
+    gap: 1rem;
+  }
+  
+  .social-img,
+  .email-icon {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .email-icon {
+    font-size: 20px;
+  }
+}
+
+/* Ajustes del footer para páginas de autenticación */
+.auth-content + .site-footer {
+  margin-top: auto;
+  background: var(--color-primary);
+}
+
+.auth-content + .site-footer .social-footer-container {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

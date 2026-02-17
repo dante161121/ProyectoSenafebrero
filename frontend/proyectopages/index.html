@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<!-- INICIO: ENCABEZADO DEL DOCUMENTO HTML    -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IN OUT MANAGER</title>
+  <meta name="description" content="IN OUT MANAGER: Soluciones tecnológicas, desarrollo de software, integración de sistemas, consultoría y más.">
+  <meta name="keywords" content="software, tecnología, integración, consultoría, desarrollo, sistemas, web, UI/UX, modernización, portfolio, tecnologías">
+  
+  <!-- Precargar recursos críticos -->
+  <link rel="preload" href="../assets/img/icon.jpg" as="image">
+  <link rel="preload" href="../assets/css/styles.css" as="style">
+  <link rel="preload" href="../assets/js/script.js" as="script">
+  
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/footer-styles.css">
+  <link rel="icon" type="image/jpeg" href="../assets/img/icon.jpg">
+  <!-- OJO SUPER IMPORTAMTE ================== temporalmente para que funcione con Vite -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../assets/js/script.js" defer></script>
+</head>
+
+<!-- FIN: ENCABEZADO DEL DOCUMENTO HTML       -->
+<body>
+
+  <!-- INICIO: HEADER Y NAVEGACIÓN PRINCIPAL  ---->
+ 
+  <header class="site-header">
+    <div class="header-title">
+      <h1>IN OUT MANAGER</h1>
+      <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Abrir menú">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <ul id="mainNavList" class="nav-menu-list">
+        <li class="nav-logo">
+          <img src="../assets/img/icon.jpg" alt="Logo de IN OUT MANAGER" class="icon" loading="eager">
+        </li>
+        <li class="nav-items-container">
+          <ul class="nav-items-group">
+            <li class="nav-item"><a href="#tecnologias" class="nav-btn btn-animated">Tecnologías</a></li>
+            <li class="nav-item"><a href="#nosotros" class="nav-btn btn-animated">Sobre Nosotros</a></li>
+            <li class="nav-item"><a href="#portfolio" class="nav-btn btn-animated">Portfolio</a></li>
+            <li class="nav-item"><a href="#contacto" class="nav-btn btn-animated">Contacto</a></li>
+          </ul>
+        </li>
+        <li class="auth-buttons-container">
+          <a href="../components/auth/registro.html" class="nav-btn auth-btn register-btn btn-animated">Registrarse</a>
+          <a href="../components/auth/login.html" class="nav-btn auth-btn login-btn btn-animated">Ingresar</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- FIN: HEADER -->
+ 
+  <!-- INICIO: CONTENIDO PRINCIPA-->
+ 
+  <main class="site-content">
+   
+    <!-- INICIO: SECCIÓN DE CARRUSEL-->
+  
+    <section id="carrusel" class="carousel-section animate-entry">
+      <h2>Servicios Destacados</h2>
+      <div class="carousel-wrapper">
+        <div class="carousel-track">
+          <div class="carousel-slide">
+            <picture>
+              <img src="../assets/img/software.jpg" alt="Desarrollo de Software" loading="lazy" width="800" height="450">
+            </picture>
+            <p>Desarrollo de Software a medida para optimizar tus procesos.</p>
+          </div>
+          <div class="carousel-slide">
+            <picture>
+              <img src="../assets/img/api.jpg" alt="Integración de Sistemas y APIs" loading="lazy" width="800" height="450">
+            </picture>
+            <p>Integración de Sistemas y APIs para una mayor eficiencia empresarial.</p>
+          </div>
+          <div class="carousel-slide">
+            <picture>
+              <img src="../assets/img/consultoria.jpg" alt="Consultoría Tecnológica" loading="lazy" width="800" height="450">
+            </picture>
+            <p>Consultoría especializada para adoptar las mejores tecnologías.</p>
+          </div>
+          <div class="carousel-slide">
+            <picture>
+              <img src="../assets/img/web.jpg" alt="Desarrollo Web" loading="lazy" width="800" height="450">
+            </picture>
+            <p>Desarrollo de sitios web modernos con las últimas tecnologías.</p>
+          </div>
+          <div class="carousel-slide">
+            <picture>
+              <img src="../assets/img/uiux.jpg" alt="Diseño UI/UX" loading="lazy" width="800" height="450">
+            </picture>
+            <p>Diseño de interfaces de usuario intuitivas y experiencias atractivas.</p>
+          </div>
+        </div>
+        <button class="carousel-prev" aria-label="Anterior">&#10094;</button>
+        <button class="carousel-next" aria-label="Siguiente">&#10095;</button>
+        <div class="carousel-indicators"></div>
+      </div>
+    </section>
+   
+    <!-- FIN: SECCIÓN DE CARRUSE-->
+    
+    <!-- INICIO: SECCIÓN DE TECNOLOGÍAS-->
+    
+    <section id="tecnologias" class="technologies-section animate-entry">
+      <h2>Tecnologías</h2>
+      <div class="technology-list">
+        <article class="technology-item container-animated">
+          <picture>
+            <img src="../assets/img/software.jpg" alt="Imagen representativa del desarrollo de software" loading="lazy" width="400" height="300">
+          </picture>
+          <h3>Desarrollo de Software</h3>
+          <p>Creación de aplicaciones a medida para optimizar procesos y aumentar la productividad de tu empresa.</p>
+          <div class="tech-icon-container">
+            <span class="tech-icon">
+              <i class="fas fa-code"></i>
+            </span>
+          </div>
+        </article>
+        <article class="technology-item container-animated">
+          <picture>
+            <img src="../assets/img/api.jpg" alt="Imagen representativa de la integración de sistemas" loading="lazy" width="400" height="300">
+          </picture>
+          <h3>Integración de Sistemas</h3>
+          <p>Conexión de diferentes plataformas para un flujo de trabajo eficiente y sin interrupciones.</p>
+          <div class="tech-icon-container">
+            <span class="tech-icon">
+              <i class="fas fa-plug"></i>
+            </span>
+          </div>
+        </article>
+        <article class="technology-item container-animated">
+          <picture>
+            <img src="../assets/img/consultoria.jpg" alt="Imagen representativa de la consultoría tecnológica" loading="lazy" width="400" height="300">
+          </picture>
+          <h3>Consultoría Tecnológica</h3>
+          <p>Asesoramiento experto en la adopción y uso de nuevas tecnologías para impulsar tu negocio.</p>
+          <div class="tech-icon-container">
+            <span class="tech-icon">
+              <i class="fas fa-chart-line"></i>
+            </span>
+          </div>
+        </article>
+      </div>
+    </section>
+ 
+    <!-- FIN: SECCIÓN DE TECNOLOGÍAS -->
+    
+    <!-- INICIO: SECCIÓN SOBRE NOSOTROS          -->
+   
+    <section id="nosotros" class="about-section animate-entry">
+      <h2>Sobre Nosotros</h2>
+      <div class="about-container">
+        <picture>
+          <img src="../assets/img/nosotros.jpg" alt="Equipo de IN OUT MANAGER trabajando en soluciones tecnológicas" loading="lazy" width="800" height="450">
+        </picture>
+        <div class="about-overlay">
+          <h3>Equipo de Innovación</h3>
+          <p>Profesionales apasionados por crear soluciones tecnológicas de vanguardia</p>
+        </div>
+      </div>
+      <p>En IN OUT MANAGER, somos un equipo apasionado por la tecnología y la innovación. Nuestro objetivo es ayudar a las empresas a mejorar su productividad y eficiencia a través de soluciones tecnológicas personalizadas. Con años de experiencia en el sector, nos hemos convertido en un socio de confianza para nuestros clientes, ofreciendo soluciones que realmente marcan la diferencia.</p>
+    </section>
+   
+    
+    <!-- INICIO: SECCIÓN DE PORTFOLIO -->
+   
+    <section id="portfolio" class="portfolio-section animate-entry">
+      <h2>Portfolio</h2>
+      <div class="portfolio-gallery">
+        <div class="portfolio-item">
+          <img src="../assets/img/uiux.jpg" alt="Diseño de interfaces UI/UX" loading="lazy">
+          <div class="portfolio-category">UI/UX</div>
+          <div class="portfolio-overlay">
+            <h3>Diseño de Interfaces</h3>
+            <p>Creación de experiencias de usuario intuitivas y atractivas</p>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="../assets/img/web.jpg" alt="Desarrollo de sitios web modernos" loading="lazy">
+          <div class="portfolio-category">Web</div>
+          <div class="portfolio-overlay">
+            <h3>Desarrollo Web</h3>
+            <p>Sitios web responsivos con las últimas tecnologías</p>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="../assets/img/tecnologias.jpg" alt="Uso de tecnologías avanzadas" loading="lazy">
+          <div class="portfolio-category">Tecnología</div>
+          <div class="portfolio-overlay">
+            <h3>Soluciones Avanzadas</h3>
+            <p>Implementación de tecnologías de vanguardia</p>
+          </div>
+        </div>
+      </div>
+    </section>
+ 
+
+    <!-- INICIO: SECCIÓN DE CONTACTO             -->
+ 
+    <section id="contacto" class="contact-section no-animation">
+      <h2>Contacto</h2>
+      <div class="contact-card-container">
+        <div class="contact-card">
+          <div class="contact-card-front">
+            <div class="contact-header">
+              <i class="fas fa-paper-plane"></i>
+              <h3>Envíanos un mensaje</h3>
+              <p>Estaremos encantados de responder a tus consultas</p>
+            </div>
+            <form action="#" method="POST" class="contact-form" id="contactForm" novalidate>
+              <div class="form-group">
+                <label for="name">Nombre:</label>
+                <input type="text" id="name" name="name" required minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]+" aria-describedby="nameError" placeholder="Tu nombre">
+                <div class="error-message" id="nameError" aria-live="polite"></div>
+              </div>
+              <div class="form-group">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" aria-describedby="emailError" placeholder="correo@ejemplo.com">
+                <div class="error-message" id="emailError" aria-live="polite"></div>
+              </div>
+              <div class="form-group">
+                <label for="message">Mensaje:</label>
+                <textarea id="message" name="message" rows="4" required minlength="10" maxlength="500" aria-describedby="messageError" placeholder="Escribe tu mensaje aquí..."></textarea>
+                <div class="error-message" id="messageError" aria-live="polite"></div>
+              </div>
+              <button type="submit" class="submit-btn">Enviar Mensaje</button>
+              <div class="form-status" aria-live="assertive"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+ 
+  <!-- INICIO: FOOTER SIMPLE DE REDES SOCIALES  -->
+  
+  <footer class="site-footer">
+    <div class="social-footer-container">
+      <div class="social-media-footer">
+        <a href="#" class="social-icon-footer" aria-label="Facebook">
+          <img src="../assets/img/facebook.jpg" alt="Facebook" class="social-img">
+        </a>
+        <a href="#" class="social-icon-footer" aria-label="Instagram">
+          <img src="../assets/img/instagram.jpg" alt="Instagram" class="social-img">
+        </a>
+        <a href="#" class="social-icon-footer" aria-label="TikTok">
+          <img src="../assets/img/tiktok.jpg" alt="TikTok" class="social-img">
+        </a>
+        <a href="mailto:info@inoutmanager.com" class="social-icon-footer" aria-label="Correo">
+          <i class="fas fa-envelope email-icon"></i>
+        </a>
+      </div>
+      <p class="copyright-text">© 2025 IN OUT MANAGER</p>
+    </div>
+  </footer>
+  
+  <!-- FIN: FOOTER -->
+</body>
+</html>

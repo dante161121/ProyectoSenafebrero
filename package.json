@@ -1,0 +1,39 @@
+{
+  "name": "inoutmanager",
+  "version": "1.0.0",
+  "description": "Sistema de gestión IN OUT MANAGER - Frontend moderno con gestión de dependencias",
+  "main": "frontend/proyectopages/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python -m http.server 8000",
+    "install-deps": "npm install",
+    "start:backend": "cd backend && node server.js",
+    "start:frontend": "vite",
+    "start:both": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:windows": "powershell -ExecutionPolicy Bypass -File start-both.ps1",
+    "clean:ports": "powershell -Command \"Get-Process -Name 'node' -ErrorAction SilentlyContinue | Stop-Process -Force\""
+  },
+  "keywords": [
+    "frontend",
+    "javascript",
+    "css",
+    "html",
+    "responsive",
+    "dashboard"
+  ],
+  "author": "IN OUT MANAGER Team",
+  "license": "MIT",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "vite": "^7.1.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "local"
+  }
+}

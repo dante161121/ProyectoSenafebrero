@@ -1,0 +1,6 @@
+<!-- Esta es una imagen en Base64 que se usará como perfil por defecto -->
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <circle cx="100" cy="100" r="100" fill="#E0E0E0"/>
+  <circle cx="100" cy="80" r="40" fill="#9E9E9E"/>
+  <path d="M100 130C66.8 130 40 156.8 40 190H160C160 156.8 133.2 130 100 130Z" fill="#9E9E9E"/>
+</svg>

@@ -1,0 +1,144 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Dependencias
+node_modules/
+vendor/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Archivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de respaldo
+*.bak
+*.swp
+*~
+
+# Archivos de caché
+.cache/
+.temp/
+
+# Archivos específicos del proyecto que no queremos rastrear
+frontend/dashboard-empleado.js
+frontend/styles.css
+
+# Eliminar estas líneas ya que no habrá backend:
+# Archivos de Django
+# *.log
+# local_settings.py
+# db.sqlite3
+# db.sqlite3-journal
+
+# Archivos de entorno virtual
+# backend/env/
+# backend/venv/
+# backend/.env
+# backend/.venv
+
+# ==========================================
+# ARCHIVOS DE PRUEBA - NO RASTREAR
+# ==========================================
+# Archivos HTML de prueba
+frontend/components/auth/test-*.html
+frontend/test-*.html
+**/test-*.html
+
+# ==========================================
+# ARCHIVOS TEMPORALES DE VS CODE
+# ==========================================
+# Configuración de VS Code local
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Archivos temporales del editor
+*.tmp
+*.temp
+*~$*
+
+# Archivos de respaldo automático
+*.backup
+*.orig
+*.rej
+
+# ==========================================
+# ARCHIVOS DE DESARROLLO Y DEBUGGING
+# ==========================================
+# Archivos de log de desarrollo
+debug.log
+error.log
+*.debug
+
+# Archivos de caché de Node.js
+.npm/
+.node_repl_history
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Archivos de Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos de entorno virtual
+backend/env/
+backend/venv/
+backend/.env
+backend/.venv
+
+# ==========================================
+# ARCHIVOS ESPECÍFICOS DEL PROYECTO
+# ==========================================
+# Documentación de desarrollo temporal
+TEMP_*.md
+DEV_*.md
+DEBUG_*.md
+
+# ==========================================
+# ARCHIVOS GENERADOS DINÁMICAMENTE
+# ==========================================
+# Reportes Excel generados (no rastrear archivos, solo estructura)
+backend/downloads/reports/*.xlsx
+backend/downloads/reports/*.xls
+!backend/downloads/reports/.gitkeep
+
+# Fotos de perfil de usuarios (no rastrear archivos, solo estructura)
+backend/uploads/profiles/*
+!backend/uploads/profiles/.gitkeep
+!backend/uploads/profiles/default.png
