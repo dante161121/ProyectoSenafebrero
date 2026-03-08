@@ -1,13 +1,6 @@
-# InOutManager - Sistema de Gestión de Asistencia y Control de Jornada Laboral
-
-<p align="center">
-  <img src="frontend/assets/img/icon.jpg" alt="InOutManager Logo" width="150">
-</p>
-
 ## Descripción del Proyecto
 
 **InOutManager** es un sistema completo de gestión de asistencia y control de jornada laboral desarrollado con tecnologías modernas (MERN Stack). El sistema permite el registro preciso de entradas y salidas de empleados, cálculo automático de tiempos laborados según la legislación colombiana vigente (2025), generación de reportes avanzados en formato Excel, auditoría completa de acciones y administración completa de usuarios con roles diferenciados.
-
 
 ## Tecnologías Utilizadas
 
@@ -48,7 +41,7 @@ Tecnología
 **Registro de entrada/salida**: Marcación precisa con timestamp
 **Sesiones de trabajo**: Creación automática de sesiones laborales
 **Cálculo de tiempos**: Algoritmos avanzados para cálculo de tiempo laborado
-**Legislación colombiana**: Implementación completa de la legislación laboral 2025 (Ley 2101, CST, Decreto 1072)
+**Legislación colombiana**: Implementación completa de la legislación laboral 
 **Recargos automáticos**: Cálculo de recargos nocturnos (35%), extras diurnas (25%), extras nocturnas (75%) y dominicales (100%)
 **Validación de integridad**: Verificación de consistencia de datos
 **Distribución de jornadas**: Clasificación entre jornada diurna (6:00-22:00) y nocturna (22:00-6:00)
@@ -68,58 +61,35 @@ Tecnología
 **Vista en tiempo real**: Monitoreo continuo de asistencia de todos los empleados
 **Gestión de empleados**: Administración completa del personal (alta, baja, modificación)
 
+## Entorno de Desarrollo — Requisitos
 
-### Prerequisites
+Antes de ejecutar el proyecto asegúrate de tener instalado lo siguiente en tu computador:
 
-- Node.js 18.x o superior
-- MongoDB 6.x o superior
-- npm 9.x o superior
-- Git
+| **Node.js**  Ejecutar el backend y el servidor de desarrollo del frontend 
+| **npm**  Instalar los paquetes del proyecto (se instala junto con Node.js) 
+| **MongoDB Community**  Base de datos donde se guarda la información del sistema 
+| **Git** Clonar y gestionar el repositorio 
 
-### Pasos de Instalación
+### 2. Instalar las dependencias
 
-1. **Clonar el repositorio**
-   bash
-   git clone https://github.com/mariangeldante2563/ProyectoFinalSEN.git
-   cd ProyectoFinalSEN
-   
+```bash
+npm install
+```
 
-2. **Instalar dependencias del proyecto**
-   bash
-   npm install
-  
+Luego las dependencias del backend:
 
-3. **Instalar dependencias del backend**
-   bash
-   cd backend
-   npm install
-   cd 
-  
+cd backend
+npm install
+cd 
 
-4. **Configurar variables de entorno**
+## Cómo Arrancar el Proyecto
 
-   Crear archivo `.env` en la carpeta `backend/`:
-   env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/inoutmanager
-   JWT_SECRET=tu_secreto_jwt_aqui
-   JWT_EXPIRE=7d
-   NODE_ENV=development
-   CORS_ENABLED=true
-   CORS_ORIGIN=http://localhost:5173
-  
+Abre esa dirección en tu navegador y la aplicación estará funcionando.
 
-5. **Iniciar MongoDB** 
-   bash
-   # En Windows
-   net start MongoDB
-   
-6. **Ejecutar el proyecto**
+### Arranque rápido (todo en uno)
 
-Opción 1 - Script de Windows:
- bash
-npm run start:windows
+npm run start:both
 
 ##  Desarrollador
  
-| **Repositorio** | [ProyectoFinalSEN](https://github.com/mariangeldante2563/ProyectoFinalSEN) |
+| **Repositorio** | [ProyectoFinalSEN](https://github.com/mariangeldante2563/ProyectoFinalSEN) 

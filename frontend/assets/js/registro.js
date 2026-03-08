@@ -10,10 +10,6 @@ class RegistroManager {
         this.tipoUsuarioInput = document.getElementById('tipoUsuario');
         this.adminFields = document.getElementById('adminFields');
         this.mensajeContainer = document.getElementById('registroMensaje');
-        this.usersPanel = document.getElementById('usersPanel');
-        this.usersList = document.getElementById('usersList');
-        this.togglePanel = document.getElementById('togglePanel');
-        
         if (!this.form) throw new Error('Elemento del formulario no encontrado');
         
         this.init();
@@ -29,8 +25,6 @@ class RegistroManager {
       this.setupRoleTabs();
       this.setupFormValidation();
       this.setupFormSubmission();
-      this.setupUsersPanel();
-      this.loadExistingUsers();
     } catch (error) {
 
     }
@@ -244,13 +238,9 @@ class RegistroManager {
           return;
         }
       }
-      if (this.isDocumentExists(formData.numeroDocumento)) {
-        this.showMessage('Este número de documento ya está registrado.', 'error');
-        return;
-      }
 
-      console.log('📡 Enviando registro al backend...');
-      const backendUrl = 'http://localhost:5000/api/auth/register';
+      console.log(' Enviando registro al backend...');
+      const backendUrl = '/api/auth/register';
       
       const registroData = {
         nombreCompleto: formData.nombreCompleto,
@@ -288,15 +278,11 @@ class RegistroManager {
       if (response.ok && data.success) {
         console.log(' Usuario registrado en MongoDB');
 
-        this.saveUserData(formData);
-
         this.showMessage(
           `¡Registro exitoso! Bienvenido/a ${formData.nombreCompleto}. Su registro como ${formData.tipoUsuario} ha sido completado.`,
           'success'
         );
 
-        this.updateUsersList();
-        this.showUsersPanel();
         setTimeout(() => {
           window.location.href = 'login.html';
         }, 2000);
@@ -380,38 +366,11 @@ class RegistroManager {
   }
 
   isDocumentExists(documento) {
-    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    return existingUsers.some(user => user.numeroDocumento === documento);
+    // La validación de duplicados la maneja el backend.
+    // Este método se mantiene para compatibilidad pero no bloquea el envío.
+    return false;
   }
 
-  saveUserData(userData) {
-    const userToSave = {
-      id: userData.id,
-      nombreCompleto: userData.nombreCompleto,
-      numeroDocumento: userData.numeroDocumento,
-      correoElectronico: userData.correoElectronico,
-      tipoUsuario: userData.tipoUsuario,
-      fechaRegistro: userData.fechaRegistro,
-      cargo: userData.cargo || '',
-      horarioAsignado: userData.horarioAsignado || '',
-      edad: userData.edad || '',
-      telefono: userData.telefono || '',
-      direccion: userData.direccion || ''
-    };
-    if (userData.tipoUsuario === 'administrador') {
-      userToSave.departamento = userData.departamento || '';
-      userToSave.codigoAdmin = userData.codigoAdmin;
-    }
-    if (typeof SecurityManager !== 'undefined') {
-      userToSave.password = SecurityManager.hashPassword(userData.password);
-    } else {
-      userToSave.password = btoa(userData.password);
-    }
-    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    existingUsers.push(userToSave);
-    localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-  }
-  
   showMessage(message, type) {
     if (typeof NotificationManager !== 'undefined') {
       NotificationManager.showToast(message, type);
@@ -451,102 +410,6 @@ class RegistroManager {
     }, 1000);
   }
 
-  setupUsersPanel() {
-    if (this.togglePanel) {
-      this.togglePanel.addEventListener('click', () => {
-        this.toggleUsersPanel();
-      });
-    }
-  }
-
-  loadExistingUsers() {
-    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    if (existingUsers.length > 0) {
-      this.showUsersPanel();
-      this.updateUsersList();
-    }
-  }
-
-  showUsersPanel() {
-    if (this.usersPanel) {
-      this.usersPanel.style.display = 'block';
-    }
-  }
-
-  toggleUsersPanel() {
-    const usersList = this.usersList;
-    if (usersList.style.display === 'none' || !usersList.style.display) {
-      usersList.style.display = 'block';
-      this.updateUsersList();
-    } else {
-      usersList.style.display = 'none';
-    }
-  }
-
-  updateUsersList() {
-    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    
-    if (existingUsers.length === 0) {
-      this.usersList.innerHTML = '<p class="no-users">No hay usuarios registrados aún.</p>';
-      return;
-    }
-
-    let usersHtml = `
-      <div class="users-count">
-        <strong>Total de usuarios registrados: ${existingUsers.length}</strong>
-      </div>
-    `;
-
-    existingUsers.forEach((user, index) => {
-      const fecha = new Date(user.fechaRegistro).toLocaleString('es-ES');
-      usersHtml += `
-        <div class="user-card">
-          <div class="user-info">
-            <div class="user-header">
-              <h4>${user.nombreCompleto}</h4>
-              <span class="user-type ${user.tipoUsuario}">${user.tipoUsuario.toUpperCase()}</span>
-            </div>
-            <div class="user-details">
-              <p><strong>Documento:</strong> ${user.numeroDocumento}</p>
-              <p><strong>Email:</strong> ${user.correoElectronico}</p>
-              ${user.cargo ? `<p><strong>Cargo:</strong> ${user.cargo}</p>` : ''}
-              ${user.telefono ? `<p><strong>Teléfono:</strong> ${user.telefono}</p>` : ''}
-              <p><strong>Registrado:</strong> ${fecha}</p>
-            </div>
-          </div>
-          <div class="user-actions">
-            <button class="delete-user-btn" data-index="${index}" data-doc="${user.numeroDocumento}">
-               Eliminar
-            </button>
-          </div>
-        </div>
-      `;
-    });
-
-    this.usersList.innerHTML = usersHtml;
-    this.usersList.querySelectorAll('.delete-user-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        const doc = e.target.dataset.doc;
-        this.deleteUser(index, doc);
-      });
-    });
-  }
-
-  deleteUser(index, documento) {
-    if (confirm(`¿Está seguro de que desea eliminar el usuario con documento ${documento}?`)) {
-      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      existingUsers.splice(index, 1);
-      localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-      
-      this.updateUsersList();
-      this.showMessage('Usuario eliminado correctamente.', 'success');
-
-      if (existingUsers.length === 0) {
-        this.usersPanel.style.display = 'none';
-      }
-    }
-  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

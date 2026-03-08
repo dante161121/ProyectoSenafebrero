@@ -137,72 +137,92 @@ exports.register = async (req, res) => {
  */
 exports.login = async (req, res) => {
   try {
-    const { correoElectronico, password, codigoAdmin } = req.body;
+    console.log('[auth/login] body:', req.body); // log temporal; quitar al finalizar depuración
+    const rawEmail = (req.body.correoElectronico || '').toString();
+    const correoElectronico = rawEmail.trim().toLowerCase();
+    const password = req.body.password;
+    const codigoAdmin = req.body.codigoAdmin;
 
-    console.log(' Intento de login:', { correoElectronico, tienePassword: !!password, tieneCodigoAdmin: !!codigoAdmin });
+    // Logs temporales de diagnóstico (no exponen password)
+    console.log(' Login intento -> correoNormalizado:', correoElectronico);
+    console.log(' Mongo URI (host/db):', (process.env.MONGODB_URI || '').replace(/^(mongodb(?:\+srv)?:\/\/)(.*?)(\@)?(.*)$/i, (m, p1, p2, p3, p4) => {
+      // Muestra solo host y db sin credenciales
+      const rest = p3 ? p4 : p2;
+      return p1 + rest;
+    }));
 
     if (!correoElectronico || !password) {
       console.log(' Login fallido: Datos incompletos');
       return res.status(400).json({
         success: false,
-        message: 'Por favor, proporcione correo electrónico y contraseña'
+        message: 'Error en los datos de entrada',
+        errors: [{ field: 'correoElectronico', message: 'El correo electrónico y la contraseña son obligatorios' }]
       });
     }
 
-
     const user = await User.findOne({ correoElectronico }).select('+password');
     console.log(' Usuario encontrado:', user ? `Sí (${user.tipoUsuario})` : 'No');
+    if (user) {
+      console.log(' Estado usuario:', { activo: user.activo, id: user._id });
+      const pwdType = typeof user.password;
+      const pwdLen = typeof user.password === 'string' ? user.password.length : null;
+      const bcryptPrefix = typeof user.password === 'string' ? user.password.slice(0, 4) : null;
+      console.log(' Password meta -> type/len/prefix:', { pwdType, pwdLen, bcryptPrefix });
+    }
 
     if (!user) {
       console.log(' Usuario no encontrado en la base de datos');
       return res.status(401).json({
         success: false,
-        message: 'Credenciales inválidas'
+        message: 'Credenciales inválidas',
+        errors: [{ field: 'credenciales', message: 'Usuario o contraseña inválidos' }]
       });
+    }
+
+    const isAdmin = user.tipoUsuario === 'administrador';
+
+    // Validación condicional de código admin solo si el usuario es admin
+    if (isAdmin) {
+      if (!codigoAdmin) {
+        console.log(' Código de administrador faltante para usuario admin');
+        return res.status(401).json({
+          success: false,
+          message: 'Credenciales inválidas',
+          errors: [{ field: 'codigoAdmin', message: 'Código de administrador requerido' }]
+        });
+      }
+
+      const adminCodeRegex = /^\d{4}$/;
+      if (!adminCodeRegex.test(String(codigoAdmin))) {
+        console.log(' Código de administrador con formato inválido');
+        return res.status(401).json({
+          success: false,
+          message: 'Credenciales inválidas',
+          errors: [{ field: 'codigoAdmin', message: 'El código de administrador debe ser un número de máximo 4 dígitos' }]
+        });
+      }
+
+      if (user.codigoAdmin !== String(codigoAdmin)) {
+        console.log(' Código de administrador no coincide');
+        return res.status(401).json({
+          success: false,
+          message: 'Credenciales inválidas',
+          errors: [{ field: 'codigoAdmin', message: 'Código de administrador incorrecto' }]
+        });
+      }
     }
 
     console.log(' Verificando contraseña...');
     const isMatch = await user.matchPassword(password);
-    console.log(' Contraseña coincide:', isMatch);
+    console.log(' Contraseña coincide (bcrypt.compare):', isMatch);
 
     if (!isMatch) {
-      console.log(' Contraseña no coincide, verificando formato legacy...');
-      const isLegacyMatch = user.isLegacyPassword(user.password, password);
-      
-      if (isLegacyMatch) {
-        console.log(' Contraseña legacy detectada, actualizando...');
-
-        user.password = password;
-        await user.save();
-      } else {
-        console.log(' Credenciales incorrectas');
-        return res.status(401).json({
-          success: false,
-          message: 'Credenciales inválidas'
-        });
-      }
-    }
-
-
-    if (user.tipoUsuario === 'administrador') {
-      console.log(' Usuario es administrador, verificando código...');
-      if (!codigoAdmin) {
-        console.log(' Código de administrador no proporcionado');
-        return res.status(401).json({
-          success: false,
-          message: 'Código de administrador requerido'
-        });
-      }
-
-      console.log('🔍 Comparando códigos:', { almacenado: user.codigoAdmin, recibido: codigoAdmin });
-      if (user.codigoAdmin !== codigoAdmin) {
-        console.log(' Código de administrador incorrecto');
-        return res.status(401).json({
-          success: false,
-          message: 'Código de administrador incorrecto'
-        });
-      }
-      console.log(' Código de administrador correcto');
+      console.log(' Credenciales incorrectas (password)');
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciales inválidas',
+        errors: [{ field: 'credenciales', message: 'Usuario o contraseña inválidos' }]
+      });
     }
 
     console.log(' Autenticación exitosa, generando token...');
@@ -225,7 +245,6 @@ exports.login = async (req, res) => {
     console.log(' Enviando respuesta de login exitoso');
     res.status(200).json({
       success: true,
-      message: 'Inicio de sesión exitoso',
       token,
       user: userData
     });

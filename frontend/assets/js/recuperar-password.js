@@ -107,34 +107,43 @@ class RecoveryManager {
     }
 
     this.showMessage('identityResult', 'Verificando información...', 'info');
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(u => u.numeroDocumento === numeroDocumento && u.correoElectronico === correoElectronico);
-    
-    if (!user) {
-      this.showMessage('identityResult', 'No se encontró ninguna cuenta con esos datos', 'error');
-      return;
-    }
 
-    this.userData = { numeroDocumento, correoElectronico };
-    this.verificationCode = this.generateCode();
-    
-    if (typeof NotificationManager !== 'undefined') {
-      NotificationManager.showToast(`CÓDIGO: ${this.verificationCode} (Simulación de envío)`, 'info', 10000);
-    } else {
-      console.log(`Código de verificación: ${this.verificationCode}`);
-      alert(`Para pruebas: Su código es ${this.verificationCode}`);
-    }
-    
-    this.showMessage('identityResult', `Código enviado a ${this.maskEmail(correoElectronico)}`, 'success');
-    
-    setTimeout(() => {
-      this.showStep(2);
-    }, 1500);
+    fetch('/api/auth/recover-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correoElectronico, numeroDocumento })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          this.showMessage('identityResult', data.message || 'Error al verificar la información', 'error');
+          return;
+        }
+
+        this.userData = { numeroDocumento, correoElectronico };
+
+        // En modo desarrollo el backend devuelve el código directamente
+        if (data.debugCode) {
+          this.verificationCode = data.debugCode;
+          if (typeof NotificationManager !== 'undefined') {
+            NotificationManager.showToast(`CÓDIGO: ${data.debugCode} (Simulación de envío)`, 'info', 10000);
+          } else {
+            alert(`Para pruebas: Su código es ${data.debugCode}`);
+          }
+        }
+
+        this.showMessage('identityResult', `Código enviado a ${this.maskEmail(correoElectronico)}`, 'success');
+        setTimeout(() => { this.showStep(2); }, 1500);
+      })
+      .catch(error => {
+        console.error('Error en recuperación:', error);
+        this.showMessage('identityResult', 'Error al conectar con el servidor', 'error');
+      });
   }
 
   handleVerificationForm() {
     const codigo = document.getElementById('codigoVerificacion').value.trim().toUpperCase();
-    
+
     if (!codigo) {
       this.showMessage('verificationResult', 'Ingrese el código de verificación', 'error');
       return;
@@ -146,24 +155,36 @@ class RecoveryManager {
     }
 
     this.showMessage('verificationResult', 'Verificando código...', 'info');
-    if (codigo.toUpperCase() !== this.verificationCode.toUpperCase()) {
-      this.showMessage('verificationResult', 'Código incorrecto', 'error');
 
-      if (typeof NotificationManager !== 'undefined') {
-        NotificationManager.showToast('El código ingresado no coincide con el enviado', 'error');
-      }
-      
-      return;
-    }
-
-    this.showMessage('verificationResult', 'Código verificado correctamente', 'success');
-    if (typeof NotificationManager !== 'undefined') {
-      NotificationManager.showToast('Código verificado correctamente', 'success');
-    }
-    
-    setTimeout(() => {
-      this.showStep(3);
-    }, 1000);
+    fetch('/api/auth/verify-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        correoElectronico: this.userData.correoElectronico,
+        codigoVerificacion: codigo
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          this.showMessage('verificationResult', data.message || 'Código incorrecto', 'error');
+          if (typeof NotificationManager !== 'undefined') {
+            NotificationManager.showToast('El código ingresado no es válido', 'error');
+          }
+          return;
+        }
+        // Guardar el código verificado para usarlo en el paso 3
+        this.verificationCode = codigo;
+        this.showMessage('verificationResult', 'Código verificado correctamente', 'success');
+        if (typeof NotificationManager !== 'undefined') {
+          NotificationManager.showToast('Código verificado correctamente', 'success');
+        }
+        setTimeout(() => { this.showStep(3); }, 1000);
+      })
+      .catch(error => {
+        console.error('Error en verificación:', error);
+        this.showMessage('verificationResult', 'Error al conectar con el servidor', 'error');
+      });
   }
 
   handlePasswordForm() {
@@ -185,39 +206,31 @@ class RecoveryManager {
       return;
     }
 
-    try {
-
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userIndex = users.findIndex(u => 
-        u.numeroDocumento === this.userData.numeroDocumento && 
-        u.correoElectronico === this.userData.correoElectronico
-      );
-      
-      if (userIndex !== -1) {
-        if (typeof SecurityManager !== 'undefined') {
-          users[userIndex].password = SecurityManager.hashPassword(nuevaPassword);
-        } else {
-          users[userIndex].password = btoa(nuevaPassword); // Fallback a btoa (no seguro)
+    fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        correoElectronico: this.userData.correoElectronico,
+        codigoVerificacion: this.verificationCode,
+        newPassword: nuevaPassword
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          this.showMessage('passwordResult', data.message || 'Error al actualizar contraseña', 'error');
+          return;
         }
-
-        localStorage.setItem('users', JSON.stringify(users));
-        
         this.showMessage('passwordResult', '¡Contraseña actualizada correctamente!', 'success');
-
         if (typeof NotificationManager !== 'undefined') {
           NotificationManager.showToast('Contraseña actualizada exitosamente', 'success');
         }
-        
-        setTimeout(() => {
-          window.location.href = 'login.html';
-        }, 2000);
-      } else {
-        this.showMessage('passwordResult', 'Error al actualizar contraseña: usuario no encontrado', 'error');
-      }
-    } catch (error) {
-      console.error('Error al actualizar contraseña:', error);
-      this.showMessage('passwordResult', 'Error al actualizar la contraseña', 'error');
-    }
+        setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+      })
+      .catch(error => {
+        console.error('Error al actualizar contraseña:', error);
+        this.showMessage('passwordResult', 'Error al conectar con el servidor', 'error');
+      });
   }
 
   showStep(step) {
@@ -294,16 +307,30 @@ class RecoveryManager {
       return;
     }
 
-    this.verificationCode = this.generateCode();
-    
-    if (typeof NotificationManager !== 'undefined') {
-      NotificationManager.showToast(`CÓDIGO NUEVO: ${this.verificationCode} (Simulación de reenvío)`, 'info', 10000);
-    } else {
-      console.log(`Nuevo código de verificación: ${this.verificationCode}`);
-      alert(`Para pruebas: Su nuevo código es ${this.verificationCode}`);
-    }
-    
-    this.showMessage('verificationResult', `Nuevo código enviado a ${this.maskEmail(this.userData.correoElectronico)}`, 'success');
+    fetch('/api/auth/recover-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        correoElectronico: this.userData.correoElectronico,
+        numeroDocumento: this.userData.numeroDocumento
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.debugCode) {
+          this.verificationCode = data.debugCode;
+          if (typeof NotificationManager !== 'undefined') {
+            NotificationManager.showToast(`CÓDIGO NUEVO: ${data.debugCode} (Simulación de reenvío)`, 'info', 10000);
+          } else {
+            alert(`Para pruebas: Su nuevo código es ${data.debugCode}`);
+          }
+        }
+        this.showMessage('verificationResult', `Nuevo código enviado a ${this.maskEmail(this.userData.correoElectronico)}`, 'success');
+      })
+      .catch(error => {
+        console.error('Error al reenviar código:', error);
+        this.showMessage('verificationResult', 'Error al reenviar el código', 'error');
+      });
   }
 }
 

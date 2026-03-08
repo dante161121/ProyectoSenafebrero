@@ -4,6 +4,7 @@ const Attendance = require('../models/Attendance');
 
 // Servicio de cálculo de tiempo
 // Maneja sesiones de trabajo
+class TimeCalculationService {
     
     /**
      * Procesar nuevo registro de asistencia

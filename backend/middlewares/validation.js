@@ -67,11 +67,7 @@ exports.loginRules = [
     .normalizeEmail(),
   
   body('password')
-    .notEmpty().withMessage('La contraseña es requerida'),
-  
-  body('codigoAdmin')
-    .optional()
-    .matches(/^[0-9]{1,4}$/).withMessage('El código de administrador debe ser un número de máximo 4 dígitos')
+    .notEmpty().withMessage('La contraseña es requerida')
 ];
 
 /**

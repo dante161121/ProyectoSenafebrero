@@ -7,13 +7,13 @@ const config = require('../config/config');
 exports.protect = async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  // Logs mínimos de depuración (pueden deshabilitarse en producción)
+  console.log('[auth] Header Authorization:', req.headers.authorization || 'N/A');
 
-    token = req.headers.authorization.split(' ')[1];
-  } 
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
+    token = authHeader.split(' ')[1];
+  }
  
   if (!token) {
     return res.status(401).json({
@@ -24,8 +24,7 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-
-    const decoded = jwt.verify(token, config.server.jwtSecret);
+    const decoded = jwt.verify(token.trim(), config.server.jwtSecret);
     req.user = await User.findById(decoded.id);
     
     if (!req.user) {
@@ -38,6 +37,7 @@ exports.protect = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error('[auth] Error verificando token:', error.message);
     return res.status(401).json({
       success: false,
       message: 'No autorizado para acceder a esta ruta',
@@ -46,7 +46,7 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-  * Autoriza según roles
+// Autoriza según roles
 exports.authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

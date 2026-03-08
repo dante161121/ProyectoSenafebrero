@@ -1,44 +1,36 @@
-/**
- * ADVANCED ADMIN DASHBOARD
+/************************
  * IN OUT MANAGER - Advanced Administrative Dashboard Controller
- * Version: 2.0.0
- * Author: IN OUT MANAGER Team
  */
 
 // Importar PathManager
 import PathManager from './path-manager.js';
 
-// Dashboard Main Controller
+// Dashboard Main Controller OK
 class AdvancedDashboardController {
     constructor() {
-        console.log('🚀 Advanced Dashboard: Inicializando controlador...');
+        console.log(' Advanced Dashboard: Inicializando controlador...');
         
-        // Verificar autenticación antes de inicializar
         this.verifyAuthentication();
-        
         this.initializeComponents();
         this.setupEventListeners();
         this.loadInitialData();
         this.startRealTimeUpdates();
-        
-        console.log('✅ Advanced Dashboard: Controlador inicializado correctamente');
+        console.log('Advanced Dashboard: Controlador inicializado correctamente');
     }
 
-    // Verificar autenticación del usuario
     verifyAuthentication() {
-        console.log('🔐 Advanced Dashboard: Verificando autenticación...');
+        console.log('Advanced Dashboard: Verificando autenticación...');
         
         const userData = SessionManager.getUserData();
         if (!userData || userData.tipo !== 'administrador') {
-            console.warn('⚠️ Advanced Dashboard: Usuario no autenticado o sin permisos');
+            console.warn(' Advanced Dashboard: Usuario no autenticado o sin permisos');
             PathManager.navigateToLogin('Acceso denegado. Debe ser administrador.');
             return;
         }
         
-        console.log('✅ Advanced Dashboard: Usuario autenticado:', userData.nombre);
+        console.log('Advanced Dashboard: Usuario autenticado:', userData.nombre);
     }
 
-    // Initialize all dashboard components
     initializeComponents() {
         this.chartsManager = new ChartsManager();
         this.realTimeManager = new RealTimeManager();
@@ -48,36 +40,29 @@ class AdvancedDashboardController {
         this.backupManager = new BackupManager();
         this.notificationSystem = new NotificationSystem();
         
-        console.log('📊 Advanced Dashboard Initialized');
+        console.log('Advanced Dashboard Initialized');
     }
 
-    // Setup event listeners
     setupEventListeners() {
-        // Quick actions in header
+        
         document.getElementById('quick-backup')?.addEventListener('click', () => {
             this.backupManager.performQuickBackup();
         });
-
         document.getElementById('quick-reports')?.addEventListener('click', () => {
             this.reportsManager.openReportsModal();
         });
-
         document.getElementById('quick-settings')?.addEventListener('click', () => {
             this.openSettingsModal();
         });
-
         document.getElementById('quick-notifications')?.addEventListener('click', () => {
             this.notificationSystem.showNotificationCenter();
         });
-
-        // Panel controls
         document.querySelectorAll('.panel-control-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.handlePanelControl(e.target);
             });
         });
 
-        // Refresh controls
         document.querySelectorAll('[data-action="refresh"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const panel = btn.closest('.dashboard-panel');
@@ -86,24 +71,13 @@ class AdvancedDashboardController {
         });
     }
 
-    // Load initial dashboard data
     async loadInitialData() {
         try {
             this.showLoadingState();
-            
-            // Load KPIs
             await this.loadKPIs();
-            
-            // Load employees data
             await this.employeeManager.loadEmployees();
-            
-            // Initialize charts
             await this.chartsManager.initializeCharts();
-            
-            // Load reports
             await this.reportsManager.loadRecentReports();
-            
-            // Load audit logs
             await this.auditManager.loadAuditLogs();
             
             this.hideLoadingState();
@@ -115,7 +89,6 @@ class AdvancedDashboardController {
         }
     }
 
-    // Load KPIs data
     async loadKPIs() {
         try {
             const response = await fetch('/api/admin/kpis');
@@ -131,7 +104,6 @@ class AdvancedDashboardController {
         }
     }
 
-    // Update KPI display
     updateKPI(type, value, trend) {
         const card = document.querySelector(`[data-kpi="${type}"]`);
         if (!card) return;
@@ -152,7 +124,6 @@ class AdvancedDashboardController {
         }
     }
 
-    // Animate number changes
     animateNumber(element, targetValue) {
         const startValue = parseInt(element.textContent) || 0;
         const duration = 1000;
@@ -161,11 +132,8 @@ class AdvancedDashboardController {
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
-            // Easing function
             const easeOutQuart = 1 - Math.pow(1 - progress, 4);
             const currentValue = Math.round(startValue + (targetValue - startValue) * easeOutQuart);
-            
             element.textContent = currentValue.toLocaleString();
             
             if (progress < 1) {
@@ -176,25 +144,17 @@ class AdvancedDashboardController {
         requestAnimationFrame(animate);
     }
 
-    // Start real-time updates
     startRealTimeUpdates() {
-        // Update KPIs every 30 seconds
         setInterval(() => {
             this.loadKPIs();
         }, 30000);
-
-        // Update real-time panel every 5 seconds
         setInterval(() => {
             this.realTimeManager.updateRealTimeData();
         }, 5000);
-
-        // Update employee status every 15 seconds
         setInterval(() => {
             this.employeeManager.updateEmployeeStatuses();
         }, 15000);
     }
-
-    // Handle panel controls
     handlePanelControl(button) {
         const action = button.dataset.action;
         const panel = button.closest('.dashboard-panel');
@@ -215,9 +175,8 @@ class AdvancedDashboardController {
         }
     }
 
-    // Refresh panel data
     async refreshPanel(panel) {
-        const panelType = panel.classList[1]; // Get second class which should be panel type
+        const panelType = panel.classList[1]; 
         
         panel.classList.add('loading');
         
@@ -248,12 +207,10 @@ class AdvancedDashboardController {
         }
     }
 
-    // Toggle fullscreen for panel
     toggleFullscreen(panel) {
         panel.classList.toggle('fullscreen');
         
         if (panel.classList.contains('fullscreen')) {
-            // Add fullscreen styles
             panel.style.position = 'fixed';
             panel.style.top = '0';
             panel.style.left = '0';
@@ -261,8 +218,6 @@ class AdvancedDashboardController {
             panel.style.height = '100vh';
             panel.style.zIndex = '9999';
             panel.style.margin = '0';
-            
-            // Add escape key listener
             const escapeHandler = (e) => {
                 if (e.key === 'Escape') {
                     this.toggleFullscreen(panel);
@@ -272,7 +227,6 @@ class AdvancedDashboardController {
             document.addEventListener('keydown', escapeHandler);
             
         } else {
-            // Remove fullscreen styles
             panel.style.position = '';
             panel.style.top = '';
             panel.style.left = '';
@@ -282,8 +236,6 @@ class AdvancedDashboardController {
             panel.style.margin = '';
         }
     }
-
-    // Export panel data
     async exportPanel(panel) {
         const panelType = panel.classList[1];
         
@@ -314,8 +266,6 @@ class AdvancedDashboardController {
             this.notificationSystem.showToast('Error al exportar datos', 'error');
         }
     }
-
-    // Show/hide loading state
     showLoadingState() {
         document.querySelector('main').classList.add('loading');
     }
@@ -324,13 +274,11 @@ class AdvancedDashboardController {
         document.querySelector('main').classList.remove('loading');
     }
 
-    // Open settings modal
     openSettingsModal() {
         const modal = document.getElementById('settingsModal') || this.createSettingsModal();
         modal.classList.add('active');
     }
 
-    // Create settings modal
     createSettingsModal() {
         const modalHTML = `
             <div id="settingsModal" class="modal-overlay">
@@ -388,7 +336,6 @@ class AdvancedDashboardController {
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         const modal = document.getElementById('settingsModal');
         
-        // Add event listeners
         modal.querySelector('.modal-close').addEventListener('click', () => {
             modal.classList.remove('active');
         });
@@ -396,16 +343,13 @@ class AdvancedDashboardController {
         modal.querySelector('#cancelSettings').addEventListener('click', () => {
             modal.classList.remove('active');
         });
-        
         modal.querySelector('#saveSettings').addEventListener('click', () => {
             this.saveSettings();
             modal.classList.remove('active');
         });
-        
         return modal;
     }
 
-    // Save settings
     saveSettings() {
         const settings = {
             darkMode: document.getElementById('darkMode').checked,
@@ -419,22 +363,18 @@ class AdvancedDashboardController {
         this.notificationSystem.showToast('Configuración guardada', 'success');
     }
 
-    // Apply settings
     applySettings(settings) {
         if (settings.darkMode) {
             document.body.classList.add('dark-mode');
         } else {
             document.body.classList.remove('dark-mode');
         }
-        
         if (!settings.animations) {
             document.body.classList.add('no-animations');
         } else {
             document.body.classList.remove('no-animations');
         }
     }
-
-    // Load saved settings
     loadSettings() {
         const savedSettings = localStorage.getItem('dashboardSettings');
         if (savedSettings) {
@@ -444,7 +384,6 @@ class AdvancedDashboardController {
     }
 }
 
-// Charts Manager
 class ChartsManager {
     constructor() {
         this.charts = {};
@@ -480,13 +419,9 @@ class ChartsManager {
 
     async initializeCharts() {
         try {
-            // Initialize attendance chart
             await this.createChart('attendance');
-            
-            // Initialize productivity chart
             await this.createChart('productivity');
-            
-            console.log('📈 Charts initialized successfully');
+            console.log('Charts initialized successfully');
         } catch (error) {
             console.error('Error initializing charts:', error);
         }
@@ -494,8 +429,7 @@ class ChartsManager {
 
     async createChart(type) {
         const canvas = document.getElementById(`${type}Chart`);
-        if (!canvas) return;
-
+        if (!canvas) return
         const response = await fetch(`/api/admin/charts/${type}`);
         const data = await response.json();
 
@@ -506,7 +440,6 @@ class ChartsManager {
             options: this.chartConfigs[type].options
         });
     }
-
     async refresh() {
         for (const [type, chart] of Object.entries(this.charts)) {
             try {
@@ -520,20 +453,17 @@ class ChartsManager {
             }
         }
     }
-
     destroy() {
         Object.values(this.charts).forEach(chart => chart.destroy());
         this.charts = {};
     }
 }
 
-// Real-Time Manager
 class RealTimeManager {
     constructor() {
         this.updateInterval = null;
     }
-
-    async updateRealTimeData() {
+async updateRealTimeData() {
         try {
             const response = await fetch('/api/admin/realtime');
             const data = await response.json();
@@ -585,7 +515,6 @@ class RealTimeManager {
     }
 }
 
-// Employee Manager
 class EmployeeManager {
     constructor() {
         this.employees = [];
@@ -597,15 +526,12 @@ class EmployeeManager {
         const searchInput = document.getElementById('employeeSearch');
         const statusFilter = document.getElementById('statusFilter');
         const departmentFilter = document.getElementById('departmentFilter');
-
         if (searchInput) {
             searchInput.addEventListener('input', () => this.applyFilters());
         }
-        
         if (statusFilter) {
             statusFilter.addEventListener('change', () => this.applyFilters());
         }
-        
         if (departmentFilter) {
             departmentFilter.addEventListener('change', () => this.applyFilters());
         }
@@ -621,7 +547,6 @@ class EmployeeManager {
             console.error('Error loading employees:', error);
         }
     }
-
     applyFilters() {
         const searchTerm = document.getElementById('employeeSearch')?.value.toLowerCase() || '';
         const statusFilter = document.getElementById('statusFilter')?.value || '';
@@ -635,10 +560,8 @@ class EmployeeManager {
 
             return matchesSearch && matchesStatus && matchesDepartment;
         });
-
         this.renderEmployees();
     }
-
     renderEmployees() {
         const tbody = document.querySelector('.employees-table tbody');
         if (!tbody) return;
@@ -674,7 +597,6 @@ class EmployeeManager {
             </tr>
         `).join('');
     }
-
     getStatusText(status) {
         const statusMap = {
             'active': 'Activo',
@@ -683,17 +605,14 @@ class EmployeeManager {
         };
         return statusMap[status] || status;
     }
-
     formatTime(timestamp) {
         if (!timestamp) return 'N/A';
         return new Date(timestamp).toLocaleString('es-ES');
     }
-
     async updateEmployeeStatuses() {
         try {
             const response = await fetch('/api/admin/employees/status');
             const statusUpdates = await response.json();
-            
             statusUpdates.forEach(update => {
                 const employee = this.employees.find(emp => emp.id === update.id);
                 if (employee) {
@@ -701,25 +620,20 @@ class EmployeeManager {
                     employee.ultimaActividad = update.ultimaActividad;
                 }
             });
-            
             this.applyFilters(); // Re-render with updated data
         } catch (error) {
             console.error('Error updating employee statuses:', error);
         }
     }
-
     async refresh() {
         await this.loadEmployees();
     }
 }
-
-// Reports Manager
 class ReportsManager {
     constructor() {
         this.reports = [];
         this.setupReportFilters();
     }
-
     setupReportFilters() {
         const applyBtn = document.getElementById('applyFilters');
         if (applyBtn) {
@@ -736,7 +650,6 @@ class ReportsManager {
             console.error('Error loading reports:', error);
         }
     }
-
     renderReports() {
         const container = document.querySelector('.reports-list');
         if (!container) return;
@@ -758,7 +671,6 @@ class ReportsManager {
             </div>
         `).join('');
     }
-
     async generateReport() {
         const reportType = document.getElementById('reportType')?.value;
         const startDate = document.getElementById('startDate')?.value;
@@ -768,7 +680,6 @@ class ReportsManager {
             window.notificationSystem.showToast('Complete todos los campos', 'warning');
             return;
         }
-
         try {
             const response = await fetch('/api/admin/reports/generate', {
                 method: 'POST',
@@ -793,7 +704,6 @@ class ReportsManager {
             window.notificationSystem.showToast('Error al generar reporte', 'error');
         }
     }
-
     formatDate(timestamp) {
         return new Date(timestamp).toLocaleDateString('es-ES');
     }
@@ -801,14 +711,10 @@ class ReportsManager {
     async refresh() {
         await this.loadRecentReports();
     }
-
     openReportsModal() {
-        // Implementation for reports modal
         console.log('Opening reports modal...');
     }
 }
-
-// Audit Manager
 class AuditManager {
     constructor() {
         this.auditLogs = [];
@@ -823,7 +729,6 @@ class AuditManager {
             console.error('Error loading audit logs:', error);
         }
     }
-
     renderAuditTimeline() {
         const timeline = document.querySelector('.audit-timeline');
         if (!timeline) return;
@@ -841,7 +746,6 @@ class AuditManager {
             </div>
         `).join('');
     }
-
     getAuditIcon(type) {
         const iconMap = {
             'login': 'sign-in-alt',
@@ -858,13 +762,10 @@ class AuditManager {
     formatTime(timestamp) {
         return new Date(timestamp).toLocaleString('es-ES');
     }
-
     async refresh() {
         await this.loadAuditLogs();
     }
 }
-
-// Backup Manager
 class BackupManager {
     constructor() {
         this.backupStatus = null;
@@ -891,7 +792,6 @@ class BackupManager {
             window.notificationSystem.showToast('Error al realizar respaldo', 'error');
         }
     }
-
     updateBackupStatus(status) {
         const statusElement = document.querySelector('.backup-status');
         if (statusElement) {
@@ -904,7 +804,6 @@ class BackupManager {
     }
 }
 
-// Notification System
 class NotificationSystem {
     constructor() {
         this.createToastContainer();
@@ -929,22 +828,14 @@ class NotificationSystem {
             </div>
             <div class="toast-body">${message}</div>
         `;
-
         const container = document.querySelector('.toast-container');
         container.appendChild(toast);
-
-        // Show toast
         setTimeout(() => toast.classList.add('show'), 100);
-
-        // Auto remove
         setTimeout(() => this.removeToast(toast), duration);
-
-        // Manual close
         toast.querySelector('.toast-close').addEventListener('click', () => {
             this.removeToast(toast);
         });
     }
-
     getToastTitle(type) {
         const titles = {
             'success': 'Éxito',
@@ -954,7 +845,6 @@ class NotificationSystem {
         };
         return titles[type] || 'Notificación';
     }
-
     removeToast(toast) {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -963,39 +853,30 @@ class NotificationSystem {
             }
         }, 300);
     }
-
     showNotificationCenter() {
-        // Implementation for notification center
         console.log('Opening notification center...');
     }
 }
 
-// Global functions for employee actions
 window.editEmployee = function(employeeId) {
     console.log('Editing employee:', employeeId);
-    // Implementation for edit employee modal
 };
 
 window.deleteEmployee = function(employeeId) {
     if (confirm('¿Está seguro de que desea eliminar este empleado?')) {
         console.log('Deleting employee:', employeeId);
-        // Implementation for delete employee
     }
 };
 
 window.downloadReport = function(reportId) {
     console.log('Downloading report:', reportId);
-    // Implementation for download report
 };
 
 window.viewReport = function(reportId) {
     console.log('Viewing report:', reportId);
-    // Implementation for view report
 };
 
-// Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Check authentication
     const authToken = localStorage.getItem('authToken');
     const currentSession = JSON.parse(localStorage.getItem('currentSession') || '{}');
     
@@ -1004,21 +885,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Verify admin role
     if (currentSession.tipoUsuario !== 'administrador') {
         alert('Acceso denegado. Solo administradores pueden acceder a este panel.');
         window.location.href = '/frontend/components/auth/login.html';
         return;
     }
-
-    // Initialize advanced dashboard
     window.dashboardController = new AdvancedDashboardController();
     window.notificationSystem = window.dashboardController.notificationSystem;
     
-    console.log('🚀 Advanced Admin Dashboard Loaded Successfully');
+    console.log('Advanced Admin Dashboard Loaded Successfully');
 });
 
-// Export for module use if needed
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         AdvancedDashboardController,

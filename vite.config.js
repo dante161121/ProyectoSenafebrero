@@ -10,6 +10,21 @@ export default defineConfig({
     host: true,
     fs: {
       allow: ['..']
+    },
+    // Proxy: redirige /api y /health al backend en puerto 5000
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true
+      },
+      '/health': {
+        target: 'http://localhost:5000',
+        changeOrigin: true
+      },
+      '/uploads': {
+        target: 'http://localhost:5000',
+        changeOrigin: true
+      }
     }
   },
   

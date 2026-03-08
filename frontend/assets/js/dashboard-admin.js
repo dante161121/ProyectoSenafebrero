@@ -76,32 +76,52 @@ class AdminDashboard extends BaseDashboard {
     }
   }
   
-  loadEmployeesList() {
+  _authHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  }
+
+  async loadEmployeesList() {
     try {
       if (!this.employeesList) return;
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const employees = users.filter(user => user.tipoUsuario === 'empleado');
+      this.employeesList.innerHTML = '<p>Cargando empleados...</p>';
+
+      const response = await fetch('/api/users?tipoUsuario=empleado&limit=200', {
+        headers: this._authHeaders()
+      });
+      const result = await response.json();
+
+      if (!result.success) {
+        this.employeesList.innerHTML = '<p>Error al obtener empleados del servidor.</p>';
+        return;
+      }
+
+      const employees = result.data;
       if (employees.length === 0) {
         this.employeesList.innerHTML = '<p>No hay empleados registrados.</p>';
         return;
       }
+
       let employeesHTML = '<div class="employees-table"><table>';
       employeesHTML += '<thead><tr><th>Nombre</th><th>Documento</th><th>Cargo</th><th>Acciones</th></tr></thead><tbody>';
-      
+
       employees.forEach(employee => {
         employeesHTML += `
-          <tr data-id="${employee.id}">
+          <tr data-id="${employee._id}">
             <td>${employee.nombreCompleto}</td>
             <td>${employee.numeroDocumento}</td>
             <td>${employee.cargo || 'No especificado'}</td>
             <td>
-              <button class="view-btn" data-id="${employee.id}">Ver</button>
-              <button class="edit-btn" data-id="${employee.id}">Editar</button>
+              <button class="view-btn" data-id="${employee._id}">Ver</button>
+              <button class="edit-btn" data-id="${employee._id}">Editar</button>
             </td>
           </tr>
         `;
       });
-      
+
       employeesHTML += '</tbody></table></div>';
       this.employeesList.innerHTML = employeesHTML;
       this.setupEmployeeActions();
@@ -133,12 +153,18 @@ class AdminDashboard extends BaseDashboard {
     });
   }
   
-  viewEmployeeDetails(employeeId) {
+  async viewEmployeeDetails(employeeId) {
     try {
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      
-      const employee = users.find(user => user.id === employeeId);
-      
+      const [userRes, attRes] = await Promise.all([
+        fetch(`/api/users/${employeeId}`, { headers: this._authHeaders() }),
+        fetch(`/api/attendance/all?userId=${employeeId}&limit=100`, { headers: this._authHeaders() })
+      ]);
+
+      const userResult = await userRes.json();
+      const attResult = await attRes.json();
+
+      const employee = userResult.data;
+
       if (!employee) {
         if (typeof NotificationManager !== 'undefined') {
           NotificationManager.showToast('Empleado no encontrado', 'error');
@@ -147,9 +173,14 @@ class AdminDashboard extends BaseDashboard {
         }
         return;
       }
-  
-      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
-      const employeeRecords = attendanceRecords.filter(record => record.userId === employeeId);
+
+      const employeeRecords = attResult.success ? attResult.data.map(r => ({
+        userId: r.userId?._id || r.userId,
+        type: r.type,
+        timestamp: r.timestamp,
+        date: r.date || new Date(r.timestamp).toLocaleDateString('es-ES'),
+        time: r.time || new Date(r.timestamp).toLocaleTimeString('es-ES')
+      })) : [];
       
       const modal = document.createElement('div');
       modal.className = 'employee-modal';
@@ -225,28 +256,36 @@ class AdminDashboard extends BaseDashboard {
     return html;
   }
   
-  loadAttendanceRecords() {
+  async loadAttendanceRecords() {
     try {
       if (!this.attendanceRecords) return;
+      this.attendanceRecords.innerHTML = '<p>Cargando registros...</p>';
 
-      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
-      const filteredRecords = this.filterAttendanceByDate(attendanceRecords);
+      // Construir filtro de fecha para la query
+      const dateParams = this._buildDateQueryParams();
+      const response = await fetch(`/api/attendance/all?limit=200${dateParams}`, {
+        headers: this._authHeaders()
+      });
+      const result = await response.json();
+
+      if (!result.success) {
+        this.attendanceRecords.innerHTML = '<p>Error al obtener registros del servidor.</p>';
+        return;
+      }
+
+      const filteredRecords = result.data;
 
       if (filteredRecords.length === 0) {
         this.attendanceRecords.innerHTML = '<p>No hay registros de asistencia disponibles.</p>';
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-
-      filteredRecords.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
       let recordsHTML = '<div class="records-table"><table>';
       recordsHTML += '<thead><tr><th>Empleado</th><th>Fecha</th><th>Hora</th><th>Tipo</th></tr></thead><tbody>';
 
       filteredRecords.forEach(record => {
-        const user = users.find(u => u.id === record.userId);
-        const userName = user ? user.nombreCompleto : 'Usuario desconocido';
+        // userId viene populate con { _id, nombreCompleto, numeroDocumento }
+        const userName = record.userId?.nombreCompleto || 'Usuario desconocido';
         const typeClass = record.type === 'entrada' ? 'entry-record' : 'exit-record';
         const typeIcon = record.type === 'entrada' ? '⬆️' : '⬇️';
 
@@ -269,153 +308,148 @@ class AdminDashboard extends BaseDashboard {
     }
   }
 
-  filterAttendanceByDate(records) {
-    if (!this.dateFilter) return records;
-    
+  // Construye los parámetros de fecha para la query según el filtro seleccionado
+  _buildDateQueryParams() {
+    if (!this.dateFilter) return '';
     const filterValue = this.dateFilter.value;
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const toISO = (d) => d.toISOString().split('T')[0];
 
     switch (filterValue) {
-      case 'today':
-        return records.filter(record => {
-          const recordDate = new Date(record.timestamp);
-          return recordDate.getDate() === now.getDate() &&
-                 recordDate.getMonth() === now.getMonth() &&
-                 recordDate.getFullYear() === now.getFullYear();
-        });
-
-      case 'week':
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-
-        return records.filter(record => {
-          const recordDate = new Date(record.timestamp);
-          return recordDate >= weekStart;
-        });
-        
-      case 'month':
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        
-        return records.filter(record => {
-          const recordDate = new Date(record.timestamp);
-          return recordDate >= monthStart;
-        });
-        
+      case 'today': {
+        const today = toISO(now);
+        return `&startDate=${today}&endDate=${today}`;
+      }
+      case 'week': {
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay());
+        return `&startDate=${toISO(weekStart)}&endDate=${toISO(now)}`;
+      }
+      case 'month': {
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        return `&startDate=${toISO(monthStart)}&endDate=${toISO(now)}`;
+      }
       case 'all':
       default:
-        return records;
+        return '';
     }
   }
   
-  loadDashboardStats() {
+  async loadDashboardStats() {
     try {
+      const today = new Date().toISOString().split('T')[0];
 
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      
+      const [usersRes, attRes] = await Promise.all([
+        fetch('/api/users?tipoUsuario=empleado&limit=1', { headers: this._authHeaders() }),
+        fetch(`/api/attendance/all?startDate=${today}&endDate=${today}&limit=500`, { headers: this._authHeaders() })
+      ]);
 
-      const employees = users.filter(user => user.tipoUsuario === 'empleado');
+      const usersResult = await usersRes.json();
+      const attResult = await attRes.json();
+
+      const totalEmployees = usersResult.success ? usersResult.pagination.total : 0;
 
       if (this.activeEmployees) {
-        this.activeEmployees.textContent = employees.length;
+        this.activeEmployees.textContent = totalEmployees;
       }
- 
+
       if (this.todayAttendance) {
-        const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
-        const now = new Date();
-        const today = now.toLocaleDateString('es-ES');
-        
-
-        const employeesWithEntryToday = new Set();
-        
-        attendanceRecords.forEach(record => {
-          const recordDate = new Date(record.timestamp).toLocaleDateString('es-ES');
-          if (recordDate === today && record.type === 'entrada') {
-            employeesWithEntryToday.add(record.userId);
-          }
-        });
-
-        const attendancePercentage = employees.length > 0 
-          ? Math.round((employeesWithEntryToday.size / employees.length) * 100) 
+        const employeesWithEntry = new Set();
+        if (attResult.success) {
+          attResult.data.forEach(record => {
+            if (record.type === 'entrada') {
+              const uid = record.userId?._id || record.userId;
+              employeesWithEntry.add(String(uid));
+            }
+          });
+        }
+        const percentage = totalEmployees > 0
+          ? Math.round((employeesWithEntry.size / totalEmployees) * 100)
           : 0;
-        
-        this.todayAttendance.textContent = `${attendancePercentage}%`;
+        this.todayAttendance.textContent = `${percentage}%`;
       }
-      
     } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
+      console.error('Error al cargar estadísticas del dashboard:', error);
     }
   }
   
-  searchEmployees() {
+  async searchEmployees() {
     try {
       if (!this.employeeSearch || !this.employeesList) return;
-      
-      const searchTerm = this.employeeSearch.value.trim().toLowerCase();
+
+      const searchTerm = this.employeeSearch.value.trim();
 
       if (!searchTerm) {
         this.loadEmployeesList();
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      this.employeesList.innerHTML = '<p>Buscando...</p>';
 
-      const filteredEmployees = users.filter(user => 
-        user.tipoUsuario === 'empleado' && (
-          user.nombreCompleto.toLowerCase().includes(searchTerm) ||
-          user.numeroDocumento.includes(searchTerm) ||
-          (user.cargo && user.cargo.toLowerCase().includes(searchTerm))
-        )
+      const response = await fetch(
+        `/api/users?tipoUsuario=empleado&search=${encodeURIComponent(searchTerm)}&limit=100`,
+        { headers: this._authHeaders() }
       );
+      const result = await response.json();
 
-      if (filteredEmployees.length === 0) {
+      if (!result.success || result.data.length === 0) {
         this.employeesList.innerHTML = '<p>No se encontraron empleados que coincidan con la búsqueda.</p>';
         return;
       }
 
       let employeesHTML = '<div class="employees-table"><table>';
       employeesHTML += '<thead><tr><th>Nombre</th><th>Documento</th><th>Cargo</th><th>Acciones</th></tr></thead><tbody>';
-      
-      filteredEmployees.forEach(employee => {
+
+      result.data.forEach(employee => {
         employeesHTML += `
-          <tr data-id="${employee.id}">
+          <tr data-id="${employee._id}">
             <td>${employee.nombreCompleto}</td>
             <td>${employee.numeroDocumento}</td>
             <td>${employee.cargo || 'No especificado'}</td>
             <td>
-              <button class="view-btn" data-id="${employee.id}">Ver</button>
-              <button class="edit-btn" data-id="${employee.id}">Editar</button>
+              <button class="view-btn" data-id="${employee._id}">Ver</button>
+              <button class="edit-btn" data-id="${employee._id}">Editar</button>
             </td>
           </tr>
         `;
       });
-      
+
       employeesHTML += '</tbody></table></div>';
-
       this.employeesList.innerHTML = employeesHTML;
-
       this.setupEmployeeActions();
-      
     } catch (error) {
       console.error('Error al buscar empleados:', error);
       this.employeesList.innerHTML = '<p>Error al buscar empleados.</p>';
     }
   }
   
-  exportData() {
+  async exportData() {
     try {
+      const dateParams = this._buildDateQueryParams();
+      const response = await fetch(`/api/attendance/all?limit=1000${dateParams}`, {
+        headers: this._authHeaders()
+      });
+      const result = await response.json();
 
-      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
-      const filteredRecords = this.filterAttendanceByDate(attendanceRecords);
-
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      let csv = 'Empleado,Documento,Fecha,Hora,Tipo\n';
-      
-      filteredRecords.forEach(record => {
-        const user = users.find(u => u.id === record.userId);
-        if (user) {
-          csv += `"${user.nombreCompleto}","${user.numeroDocumento}","${record.date}","${record.time}","${record.type}"\n`;
+      if (!result.success) {
+        if (typeof NotificationManager !== 'undefined') {
+          NotificationManager.showToast('Error al obtener datos para exportar', 'error');
+        } else {
+          alert('Error al obtener datos para exportar');
         }
+        return;
+      }
+
+      const filteredRecords = result.data;
+      let csv = 'Empleado,Documento,Fecha,Hora,Tipo\n';
+
+      filteredRecords.forEach(record => {
+        const nombre = record.userId?.nombreCompleto || 'Desconocido';
+        const documento = record.userId?.numeroDocumento || '-';
+        const fecha = record.date || new Date(record.timestamp).toLocaleDateString('es-ES');
+        const hora = record.time || new Date(record.timestamp).toLocaleTimeString('es-ES');
+        csv += `"${nombre}","${documento}","${fecha}","${hora}","${record.type}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);

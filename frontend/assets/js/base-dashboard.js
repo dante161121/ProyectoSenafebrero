@@ -150,6 +150,8 @@ class BaseDashboard {
 
   logout() {
     if (confirm('¿Está seguro que desea cerrar sesión?')) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       if (typeof SessionManager !== 'undefined') {
         SessionManager.endSession();
         if (this.clockTimer) {
@@ -178,6 +180,10 @@ class BaseDashboard {
     window.location.href = '../../components/auth/login.html';
   }
 }
+if (typeof window !== 'undefined') {
+  window.BaseDashboard = BaseDashboard;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BaseDashboard;
 }

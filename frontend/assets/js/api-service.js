@@ -4,8 +4,8 @@
 class EnhancedApiClient {
   // Constructor
   constructor(baseUrl = null) {
-    // URL base de la API - usar puerto 5000 para el backend
-    this.apiUrl = baseUrl || 'http://localhost:5000/api';
+    // URL base de la API - usa rutas relativas para que el proxy de Vite las enrute al backend
+    this.apiUrl = baseUrl || '/api';
     
     // Estado de conexión
     this.isOnline = navigator.onLine;

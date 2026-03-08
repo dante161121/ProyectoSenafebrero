@@ -26,6 +26,18 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Manejo de JSON malformado para responder 400 en vez de error genérico
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error en los datos de entrada: JSON inválido',
+      error: err.message
+    });
+  }
+  next(err);
+});
 app.use(helmet()); 
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined')); 
 
@@ -41,6 +53,15 @@ if (corsEnabled) {
   console.log(` CORS habilitado para: ${corsOptions.origin}`);
 }
 
+// Ruta de salud del servidor — usada por EnhancedApiClient.checkServerConnection()
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date()
+  });
+});
+
 // Ruta de verificación
 app.get('/', (req, res) => {
   res.json({
@@ -48,6 +69,24 @@ app.get('/', (req, res) => {
     status: 'online',
     environment: NODE_ENV,
     timestamp: new Date()
+  });
+});
+
+// Ruta base de API para evitar 404 en /api
+app.get('/api', (req, res) => {
+  res.json({
+    message: 'API de IN OUT MANAGER',
+    status: 'online',
+    environment: NODE_ENV,
+    version: '1.0.0',
+    availableRoutes: [
+      '/api/auth',
+      '/api/users',
+      '/api/attendance',
+      '/api/reports',
+      '/api/audit',
+      '/api/stats'
+    ]
   });
 });
 
@@ -83,6 +122,8 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.error('Error al conectar con MongoDB:', err.message);
   process.exit(1);
 });
+
+module.exports = app; // export para pruebas (supertest)
 
 process.on('SIGINT', () => {
   mongoose.connection.close(() => {

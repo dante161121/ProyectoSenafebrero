@@ -5,6 +5,7 @@ const Attendance = require('../models/Attendance');
 const User = require('../models/User');
 
 // Registrar entrada/salida
+exports.registerAttendance = async (req, res) => {
   try {
     const { type } = req.body;
     const userId = req.user._id;

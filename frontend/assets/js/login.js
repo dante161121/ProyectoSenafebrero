@@ -18,82 +18,77 @@
             this.isLoading = false;
         }
 
-        // Inicializa el módulo
-            try {
-                this.cacheElements();
-                this.bindEvents();
-                this.initializeUI();
-                console.log(' Login module initialized successfully');
-            } catch (error) {
-                console.error(' Error initializing login module:', error);
+            // Inicializa el módulo
+            init() {
+                try {
+                    this.cacheElements();
+                    this.bindEvents();
+                    this.initializeUI();
+                    console.log(' Login module initialized successfully');
+                } catch (error) {
+                    console.error(' Error initializing login module:', error);
+                }
             }
-        }
 
-        // Cachea los elementos del DOM
-            const selectors = {
-                form: '#loginForm',
-                email: '#email',
-                password: '#password',
-                showPassword: '#showPassword',
-                roleTabs: '.role-tab',
-                submitButton: '.login-submit-btn',
-                resultMessage: '#loginResult',
-                adminCodeGroup: '#adminCodeGroup',
-                adminCode: '#adminCode',
-                roleDescription: '#roleDescription'
-            };
+            // Cachea los elementos del DOM
+            cacheElements() {
+                const selectors = {
+                    form: '#loginForm',
+                    email: '#email',
+                    password: '#password',
+                    showPassword: '#showPassword',
+                    roleTabs: '.role-tab',
+                    submitButton: '.login-submit-btn',
+                    resultMessage: '#loginResult',
+                    adminCodeGroup: '#adminCodeGroup',
+                    adminCode: '#adminCode',
+                    roleDescription: '#roleDescription'
+                };
 
-            Object.entries(selectors).forEach(([key, selector]) => {
-                const element = selector.startsWith('.') ? 
-                    document.querySelectorAll(selector) : 
-                    document.querySelector(selector);
-                this.elements[key] = element;
-            });
-
-            
-            if (!this.elements.form || !this.elements.email || !this.elements.password) {
-                throw new Error('Critical form elements not found');
-            }
-        }
-
-       
-        // Bind de eventos
-            
-            if (this.elements.showPassword) {
-                this.elements.showPassword.addEventListener('change', (e) => {
-                    this.togglePasswordVisibility(e.target.checked);
+                Object.entries(selectors).forEach(([key, selector]) => {
+                    const element = selector.startsWith('.') ? 
+                        document.querySelectorAll(selector) : 
+                        document.querySelector(selector);
+                    this.elements[key] = element;
                 });
+
+                if (!this.elements.form || !this.elements.email || !this.elements.password) {
+                    throw new Error('Critical form elements not found');
+                }
             }
 
-          
-            if (this.elements.roleTabs) {
-                this.elements.roleTabs.forEach(tab => {
-                    tab.addEventListener('click', () => this.handleRoleChange(tab));
-                    tab.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            this.handleRoleChange(tab);
-                        }
+            // Bind de eventos
+            bindEvents() {
+                if (this.elements.showPassword) {
+                    this.elements.showPassword.addEventListener('change', (e) => {
+                        this.togglePasswordVisibility(e.target.checked);
                     });
-                });
+                }
+
+                if (this.elements.roleTabs) {
+                    this.elements.roleTabs.forEach(tab => {
+                        tab.addEventListener('click', () => this.handleRoleChange(tab));
+                        tab.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                this.handleRoleChange(tab);
+                            }
+                        });
+                    });
+                }
+
+                this.elements.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.elements.email.addEventListener('blur', () => this.validateField(this.elements.email, 'email'));
+                this.elements.password.addEventListener('blur', () => this.validateField(this.elements.password, 'password'));
             }
 
-           
-            this.elements.form.addEventListener('submit', (e) => this.handleSubmit(e));
-
-           
-            this.elements.email.addEventListener('blur', () => this.validateField(this.elements.email, 'email'));
-            this.elements.password.addEventListener('blur', () => this.validateField(this.elements.password, 'password'));
-        }
-
-        
-        // Inicializa la UI
-            
-            const defaultTab = document.querySelector(`[data-role="${this.selectedRole}"]`);
-            if (defaultTab) {
-                this.handleRoleChange(defaultTab);
+            // Inicializa la UI
+            initializeUI() {
+                const defaultTab = document.querySelector(`[data-role="${this.selectedRole}"]`);
+                if (defaultTab) {
+                    this.handleRoleChange(defaultTab);
+                }
             }
-        }
 
       
         handleRoleChange(tab) {
@@ -184,7 +179,7 @@
                 console.log(' Iniciando proceso de login:', formData);
                 
                 // Construir URL del backend
-                const backendUrl = 'http://localhost:5000/api/auth/login';
+                const backendUrl = '/api/auth/login';
                 
                 // Preparar datos para enviar
                 const loginData = {

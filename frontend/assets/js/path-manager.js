@@ -1,45 +1,33 @@
 /**
- * IN OUT MANAGER - PATH UTILITY MODULE
  * @version 2.0.0
- * @description Módulo avanzado para manejar rutas de navegación entre páginas
+ * @description 
  */
 
 class PathManager {
   /**
-   * Obtiene la base URL del proyecto
-   * @returns {string} - URL base del proyecto
+   * @returns {string} 
    */
   static getBaseUrl() {
     const protocol = window.location.protocol;
     const host = window.location.host;
-    
-    // En desarrollo con Vite, la raíz es directamente el host
-    // No hay prefijo /frontend/ en la URL
     return `${protocol}//${host}/`;
   }
 
   /**
-   * Detecta el nivel de profundidad actual en la estructura de carpetas
-   * para generar rutas relativas correctas
-   * @returns {string} - Prefijo de ruta relativa (e.g., '../', '../../', etc.)
+   * @returns {string} 
    */
   static getCurrentPathPrefix() {
     const currentPath = window.location.pathname.toLowerCase();
     
     console.log(' PathManager: Detectando ruta actual:', currentPath);
-    
-    // Usar rutas absolutas basadas en la estructura del proyecto
     const baseUrl = this.getBaseUrl();
     console.log(' PathManager: Base URL detectada:', baseUrl);
-    
-    // Para simplificar, usar rutas absolutas desde la base del frontend
     return baseUrl;
   }
   
   /**
-   * Genera una ruta absoluta para un archivo en la carpeta components
-   * @param {string} componentPath - Ruta relativa desde components (e.g., 'auth/login.html')
-   * @returns {string} - Ruta absoluta completa
+   * @param {string} componentPath 
+   * @returns {string} 
    */
   static getComponentPath(componentPath) {
     const baseUrl = this.getCurrentPathPrefix();
@@ -49,9 +37,8 @@ class PathManager {
   }
   
   /**
-   * Genera una ruta absoluta para un archivo en la carpeta assets
-   * @param {string} assetPath - Ruta relativa desde assets (e.g., 'js/script.js')
-   * @returns {string} - Ruta absoluta completa
+   * @param {string} assetPath 
+   * @returns {string} 
    */
   static getAssetPath(assetPath) {
     const baseUrl = this.getCurrentPathPrefix();
@@ -61,9 +48,8 @@ class PathManager {
   }
   
   /**
-   * Genera una ruta absoluta para una página principal
-   * @param {string} pagePath - Ruta relativa desde proyectopages (e.g., 'index.html')
-   * @returns {string} - Ruta absoluta completa
+   * @param {string} pagePath 
+   * @returns {string} 
    */
   static getPagePath(pagePath) {
     const baseUrl = this.getCurrentPathPrefix();
@@ -73,8 +59,7 @@ class PathManager {
   }
   
   /**
-   * Redirige al usuario al dashboard correspondiente según su rol
-   * @param {string} userType - Tipo de usuario ('empleado' o 'administrador')
+   * @param {string} userType
    */
   static navigateToDashboard(userType) {
     console.log(' PathManager: Navegando al dashboard para usuario tipo:', userType);
@@ -92,8 +77,7 @@ class PathManager {
   }
   
   /**
-   * Redirige al usuario a la página de login
-   * @param {string} message - Mensaje opcional para mostrar
+   * @param {string} message 
    */
   static navigateToLogin(message = null) {
     console.log(' PathManager: Navegando al login');
@@ -127,7 +111,6 @@ class PathManager {
   }
 
   /**
-   * Obtiene la URL actual sin parámetros
    * @returns {string} - URL limpia
    */
   static getCurrentCleanUrl() {
@@ -135,9 +118,9 @@ class PathManager {
   }
 
   /**
-   * Verifica si estamos en una página específica
-   * @param {string} pageName - Nombre de la página a verificar
-   * @returns {boolean} - True si estamos en esa página
+
+   * @param {string} pageName
+   * @returns {boolean} 
    */
   static isCurrentPage(pageName) {
     const currentPath = window.location.pathname.toLowerCase();
@@ -160,9 +143,8 @@ class PathManager {
   }
 
   /**
-   * Método avanzado para cargar módulos JavaScript dinámicamente
-   * @param {string} modulePath - Ruta del módulo JavaScript
-   * @returns {Promise} - Promesa que se resuelve cuando el módulo se carga
+   * @param {string} modulePath 
+   * @returns {Promise} 
    */
   static async loadModule(modulePath) {
     console.log(' PathManager: Cargando módulo:', modulePath);
@@ -170,12 +152,9 @@ class PathManager {
     try {
       const fullPath = this.getAssetPath('js/' + modulePath);
       console.log(' PathManager: Ruta completa del módulo:', fullPath);
-      
-      // Crear elemento script dinámicamente
       const script = document.createElement('script');
       script.type = 'module';
       script.src = fullPath;
-      
       return new Promise((resolve, reject) => {
         script.onload = () => {
           console.log(' PathManager: Módulo cargado exitosamente:', modulePath);
@@ -201,27 +180,21 @@ class PathManager {
    */
   static init() {
     console.log(' PathManager: Inicializando...');
-    
-    // Agregar listener para cambios de ruta
     window.addEventListener('popstate', (event) => {
       console.log(' PathManager: Cambio de ruta detectado:', event);
     });
-    
-    // Debuggear rutas al inicializar
     this.debugPaths();
     
     console.log(' PathManager: Inicialización completada');
   }
 }
 
-// Auto-inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => PathManager.init());
 } else {
   PathManager.init();
 }
 
-// Hacer PathManager disponible globalmente
 if (typeof window !== 'undefined') {
   window.PathManager = PathManager;
 }
