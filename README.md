@@ -78,18 +78,39 @@ npm install
 
 Luego las dependencias del backend:
 
+```bash
 cd backend
 npm install
-cd 
+cd ..
+```
 
 ## Cómo Arrancar el Proyecto
 
-Abre esa dirección en tu navegador y la aplicación estará funcionando.
-
 ### Arranque rápido (todo en uno)
 
+```bash
+cd .\ProyectoFinalSEN
 npm run start:both
+```
+
+Este comando deja los puertos reales fijos del proyecto:
+
+- Frontend: http://localhost:3000/proyectopages/index.html
+- Backend: http://localhost:5000/health
+
+El script de arranque ahora hace esto automáticamente:
+
+- Reutiliza backend y frontend si ya están sanos
+- Libera solo los puertos esperados del proyecto cuando hace falta
+- Evita que Vite cambie silenciosamente de 3000 a 3001
+
+Comandos útiles:
+
+```bash
+npm run ports:status
+npm run stop:both
+```
 
 ##  Desarrollador
  
-| **Repositorio** | [ProyectoFinalSEN](https://github.com/mariangeldante2563/ProyectoFinalSEN) 
+| **Repositorio** ProyectoFinalSEN https://github.com/mariangeldante2563/ProyectoFinalSEN

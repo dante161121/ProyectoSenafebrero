@@ -493,7 +493,7 @@ async updateRealTimeData() {
         feedContainer.innerHTML = feedData.map(item => `
             <div class="feed-item">
                 <div class="feed-icon ${item.type}">
-                    <i class="fas fa-${item.type === 'entry' ? 'sign-in-alt' : 'sign-out-alt'}"></i>
+                    <i class="fas fa-${item.type === 'entry' ? 'right-to-bracket' : 'right-from-bracket'}"></i>
                 </div>
                 <div class="feed-content">
                     <div class="feed-text">${item.message}</div>
@@ -881,13 +881,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentSession = JSON.parse(localStorage.getItem('currentSession') || '{}');
     
     if (!authToken && !currentSession.tipoUsuario) {
-        window.location.href = '/frontend/components/auth/login.html';
+        PathManager.navigateToLogin();
         return;
     }
     
     if (currentSession.tipoUsuario !== 'administrador') {
         alert('Acceso denegado. Solo administradores pueden acceder a este panel.');
-        window.location.href = '/frontend/components/auth/login.html';
+        PathManager.navigateToLogin();
         return;
     }
     window.dashboardController = new AdvancedDashboardController();

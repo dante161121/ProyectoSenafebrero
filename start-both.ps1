@@ -1,231 +1,224 @@
-
-# IN OUT MANAGER - SCRIPT DE INICIO COMPLETO (me toco crearlo debido a los problemas de arranque
-
-# Este script inicia tanto el backend como el frontend simultáneamente
-
 param(
     [switch]$OnlyBackend,
     [switch]$OnlyFrontend,
+    [switch]$ForceRestart,
+    [switch]$Stop,
+    [switch]$Status,
     [switch]$Help
 )
 
+$ProjectRoot = $PSScriptRoot
+$BackendPath = Join-Path $ProjectRoot 'backend'
+$BackendPort = 5000
+$FrontendPorts = @(3000, 3001)
+$PrimaryFrontendPort = 3000
+$BackendHealthUrl = "http://localhost:$BackendPort/health"
+$FrontendHealthUrl = "http://localhost:$PrimaryFrontendPort/proyectopages/index.html"
+
 function Show-Help {
     Write-Host "============================================" -ForegroundColor Cyan
-    Write-Host "IN OUT MANAGER - SCRIPT DE INICIO" -ForegroundColor Yellow
+    Write-Host "IN OUT MANAGER - GESTOR DE SERVICIOS" -ForegroundColor Yellow
     Write-Host "============================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Uso:" -ForegroundColor Green
-    Write-Host "  .\start-both.ps1              # Inicia backend y frontend"
-    Write-Host "  .\start-both.ps1 -OnlyBackend # Solo backend"
-    Write-Host "  .\start-both.ps1 -OnlyFrontend# Solo frontend"
-    Write-Host "  .\start-both.ps1 -Help        # Muestra esta ayuda"
+    Write-Host "  npm run start:both                Inicia o reutiliza backend y frontend"
+    Write-Host "  .\start-both.ps1 -OnlyBackend     Inicia o reutiliza solo backend"
+    Write-Host "  .\start-both.ps1 -OnlyFrontend    Inicia o reutiliza solo frontend"
+    Write-Host "  .\start-both.ps1 -ForceRestart    Reinicia los servicios aunque estén sanos"
+    Write-Host "  .\start-both.ps1 -Stop            Detiene puertos 5000, 3000 y 3001"
+    Write-Host "  .\start-both.ps1 -Status          Muestra el estado actual de puertos y URLs"
     Write-Host ""
-    Write-Host "Puertos:" -ForegroundColor Green
+    Write-Host "Puertos reales:" -ForegroundColor Green
     Write-Host "  Backend:  http://localhost:5000"
-    Write-Host "  Frontend: http://localhost:3000"
+    Write-Host "  Frontend: http://localhost:3000/proyectopages/index.html"
     Write-Host ""
 }
 
-function Test-NodeJs {
+function Test-CommandAvailable {
+    param([string]$CommandName)
+
+    return [bool](Get-Command $CommandName -ErrorAction SilentlyContinue)
+}
+
+function Test-UrlHealthy {
+    param(
+        [string]$Url,
+        [int]$TimeoutSeconds = 5
+    )
+
     try {
-        $nodeVersion = node --version
-        Write-Host "Node.js encontrado: $nodeVersion" -ForegroundColor Green
-        return $true
+        $response = Invoke-WebRequest -UseBasicParsing -Uri $Url -TimeoutSec $TimeoutSeconds
+        return $response.StatusCode -ge 200 -and $response.StatusCode -lt 400
     }
     catch {
-        Write-Host " Node.js no está instalado o no está en el PATH" -ForegroundColor Red
         return $false
     }
 }
 
-function Test-MongoDB {
-    Write-Host "Verificando conexión a MongoDB..." -ForegroundColor Yellow
-    try {
-        # Test simple de conexión
-        $mongoTest = Start-Process -FilePath "node" -ArgumentList "-e", "require('mongoose').connect('mongodb://localhost:27017/inoutmanager').then(() => {console.log('MongoDB OK'); process.exit(0)}).catch(() => process.exit(1))" -Wait -PassThru -NoNewWindow
-        if ($mongoTest.ExitCode -eq 0) {
-            Write-Host " MongoDB está disponible" -ForegroundColor Green
+function Get-ListeningProcessIds {
+    param([int[]]$Ports)
+
+    $connections = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
+        Where-Object { $_.LocalPort -in $Ports } |
+        Select-Object -ExpandProperty OwningProcess -Unique
+
+    if (-not $connections) {
+        return @()
+    }
+
+    return @($connections)
+}
+
+function Stop-Ports {
+    param(
+        [int[]]$Ports,
+        [string]$Label
+    )
+
+    $processIds = Get-ListeningProcessIds -Ports $Ports
+    if ($processIds.Count -eq 0) {
+        Write-Host "${Label}: no hay procesos ocupando los puertos $($Ports -join ', ')" -ForegroundColor DarkGray
+        return
+    }
+
+    foreach ($processId in $processIds) {
+        try {
+            Stop-Process -Id $processId -Force -ErrorAction Stop
+            Write-Host "${Label}: proceso $processId detenido" -ForegroundColor Yellow
+        }
+        catch {
+            Write-Host "${Label}: no se pudo detener el proceso $processId - $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+}
+
+function Wait-ForUrl {
+    param(
+        [string]$Url,
+        [int]$Retries = 20,
+        [int]$DelaySeconds = 1
+    )
+
+    for ($attempt = 1; $attempt -le $Retries; $attempt++) {
+        if (Test-UrlHealthy -Url $Url -TimeoutSeconds 5) {
             return $true
-        } else {
-            Write-Host " MongoDB podría no estar disponible" -ForegroundColor Yellow
-            return $false
         }
+        Start-Sleep -Seconds $DelaySeconds
     }
-    catch {
-        Write-Host "No se pudo verificar MongoDB" -ForegroundColor Yellow
-        return $false
-    }
+
+    return $false
 }
 
-function Start-Backend {
-    Write-Host "Iniciando Backend..." -ForegroundColor Yellow
-    $backendPath = "$PSScriptRoot\backend"
-    
-    if (-not (Test-Path $backendPath)) {
-        Write-Host "No se encontró el directorio del backend: $backendPath" -ForegroundColor Red
-        return $null
-    }
-    
-    if (-not (Test-Path "$backendPath\server.js")) {
-        Write-Host "No se encontró server.js en: $backendPath" -ForegroundColor Red
-        return $null
-    }
-    
-    try {
-        $backendProcess = Start-Process -FilePath "powershell" -ArgumentList "-Command", "Set-Location '$backendPath'; Write-Host '🚀 Backend iniciado' -ForegroundColor Green; node server.js" -PassThru
-        Write-Host "Backend iniciado (PID: $($backendProcess.Id))" -ForegroundColor Green
-        Write-Host "   URL: http://localhost:5000" -ForegroundColor Cyan
-        return $backendProcess
-    }
-    catch {
-        Write-Host " Error al iniciar el backend: $($_.Exception.Message)" -ForegroundColor Red
-        return $null
-    }
+function Start-BackendProcess {
+    Write-Host "Backend: iniciando en puerto $BackendPort..." -ForegroundColor Yellow
+    $command = "Set-Location '$BackendPath'; node server.js"
+    Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-Command", $command | Out-Null
 }
 
-function Start-Frontend {
-    Write-Host " Iniciando Frontend..." -ForegroundColor Yellow
-    $frontendPath = "$PSScriptRoot\frontend"
-    
-    if (-not (Test-Path $frontendPath)) {
-        Write-Host " No se encontró el directorio del frontend: $frontendPath" -ForegroundColor Red
-        return $null
-    }
-    
-    try {
-        $frontendProcess = Start-Process -FilePath "powershell" -ArgumentList "-Command", "Set-Location '$PSScriptRoot'; Write-Host '🚀 Frontend iniciado en puerto 5173' -ForegroundColor Green; npm run dev" -PassThru
-        Write-Host " Frontend iniciado (PID: $($frontendProcess.Id))" -ForegroundColor Green
-        Write-Host "   URL: http://localhost:5173" -ForegroundColor Cyan
-        return $frontendProcess
-    }
-    catch {
-        Write-Host " Error al iniciar el frontend: $($_.Exception.Message)" -ForegroundColor Red
-        return $null
-    }
+function Start-FrontendProcess {
+    Write-Host "Frontend: iniciando en puerto $PrimaryFrontendPort..." -ForegroundColor Yellow
+    $command = "Set-Location '$ProjectRoot'; npm run start:frontend"
+    Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-Command", $command | Out-Null
 }
 
-function Stop-Services {
-    param($BackendProcess, $FrontendProcess)
-    
+function Ensure-Backend {
+    if (-not $ForceRestart -and (Test-UrlHealthy -Url $BackendHealthUrl)) {
+        Write-Host "Backend: reutilizando instancia sana en $BackendHealthUrl" -ForegroundColor Green
+        return
+    }
+
+    Stop-Ports -Ports @($BackendPort) -Label 'Backend'
+    Start-BackendProcess
+
+    if (-not (Wait-ForUrl -Url $BackendHealthUrl)) {
+        throw "Backend: no respondió correctamente en $BackendHealthUrl"
+    }
+
+    Write-Host "Backend: listo en $BackendHealthUrl" -ForegroundColor Green
+}
+
+function Ensure-Frontend {
+    if (-not $ForceRestart -and (Test-UrlHealthy -Url $FrontendHealthUrl)) {
+        Write-Host "Frontend: reutilizando instancia sana en $FrontendHealthUrl" -ForegroundColor Green
+        return
+    }
+
+    Stop-Ports -Ports $FrontendPorts -Label 'Frontend'
+    Start-FrontendProcess
+
+    if (-not (Wait-ForUrl -Url $FrontendHealthUrl)) {
+        throw "Frontend: no respondió correctamente en $FrontendHealthUrl"
+    }
+
+    Write-Host "Frontend: listo en $FrontendHealthUrl" -ForegroundColor Green
+}
+
+function Show-Status {
+    $portInfo = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
+        Where-Object { $_.LocalPort -in ($FrontendPorts + $BackendPort) } |
+        Select-Object LocalPort, OwningProcess |
+        Sort-Object LocalPort
+
+    Write-Host "Estado de puertos:" -ForegroundColor Cyan
+    if ($portInfo) {
+        $portInfo | Format-Table -AutoSize
+    }
+    else {
+        Write-Host "No hay procesos escuchando en 3000, 3001 o 5000" -ForegroundColor DarkGray
+    }
+
     Write-Host ""
-    Write-Host "Deteniendo servicios..." -ForegroundColor Yellow
-    
-    if ($BackendProcess -and -not $BackendProcess.HasExited) {
-        try {
-            Stop-Process -Id $BackendProcess.Id -Force
-            Write-Host " Backend detenido" -ForegroundColor Green
-        }
-        catch {
-            Write-Host " Error al detener backend" -ForegroundColor Yellow
-        }
-    }
-    
-    if ($FrontendProcess -and -not $FrontendProcess.HasExited) {
-        try {
-            Stop-Process -Id $FrontendProcess.Id -Force
-            Write-Host " Frontend detenido" -ForegroundColor Green
-        }
-        catch {
-            Write-Host " Error al detener frontend" -ForegroundColor Yellow
-        }
-    }
-    
-    # Limpiar procesos node restantes
-    try {
-        Get-Process -Name "node" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-    }
-    catch {
-        # Ignorar errores
-    }
+    Write-Host "URLs:" -ForegroundColor Cyan
+    Write-Host "  Backend  ($BackendHealthUrl):  $(if (Test-UrlHealthy -Url $BackendHealthUrl) { 'OK' } else { 'DOWN' })"
+    Write-Host "  Frontend ($FrontendHealthUrl): $(if (Test-UrlHealthy -Url $FrontendHealthUrl) { 'OK' } else { 'DOWN' })"
 }
-
-
-# SCRIPT PRINCIPAL
-
 
 if ($Help) {
     Show-Help
     exit 0
 }
 
-Write-Host "============================================" -ForegroundColor Cyan
-Write-Host "IN OUT MANAGER - INICIANDO SERVICIOS" -ForegroundColor Yellow
-Write-Host "============================================" -ForegroundColor Cyan
-Write-Host ""
-
-# Verificar Node.js
-if (-not (Test-NodeJs)) {
-    Write-Host "Por favor instale Node.js desde https://nodejs.org/" -ForegroundColor Red
+if (-not (Test-CommandAvailable -CommandName 'node')) {
+    Write-Host "Node.js no esta instalado o no esta en el PATH" -ForegroundColor Red
     exit 1
 }
 
-# Verificar MongoDB
-Test-MongoDB | Out-Null
+if ($Status) {
+    Show-Status
+    exit 0
+}
 
-$backendProcess = $null
-$frontendProcess = $null
+if ($Stop) {
+    Stop-Ports -Ports @($BackendPort) -Label 'Backend'
+    Stop-Ports -Ports $FrontendPorts -Label 'Frontend'
+    Show-Status
+    exit 0
+}
+
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host "IN OUT MANAGER - ARRANQUE ESTABLE" -ForegroundColor Yellow
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host ""
 
 try {
-    # Iniciar servicios según parámetros
     if (-not $OnlyFrontend) {
-        $backendProcess = Start-Backend
-        if (-not $backendProcess) {
-            Write-Host " No se pudo iniciar el backend" -ForegroundColor Red
-            exit 1
-        }
-        Start-Sleep -Seconds 3  # Esperar a que el backend se inicie
+        Ensure-Backend
     }
-    
+
     if (-not $OnlyBackend) {
-        $frontendProcess = Start-Frontend
-        if (-not $frontendProcess) {
-            Write-Host " No se pudo iniciar el frontend" -ForegroundColor Red
-            if ($backendProcess) {
-                Stop-Process -Id $backendProcess.Id -Force
-            }
-            exit 1
-        }
+        Ensure-Frontend
     }
-    
+
     Write-Host ""
-    Write-Host "¡SERVICIOS INICIADOS EXITOSAMENTE!" -ForegroundColor Green
-    Write-Host "============================================" -ForegroundColor Cyan
-    
-    if ($backendProcess) {
-        Write-Host "🔧 Backend:  http://localhost:5000" -ForegroundColor Cyan
+    Write-Host "Servicios listos:" -ForegroundColor Green
+    if (-not $OnlyFrontend) {
+        Write-Host "  Backend:  $BackendHealthUrl" -ForegroundColor Cyan
     }
-    if ($frontendProcess) {
-        Write-Host " Frontend: http://localhost:3000" -ForegroundColor Cyan
-    }
-    
-    Write-Host ""
-    Write-Host "Presione Ctrl+C para detener todos los servicios" -ForegroundColor Yellow
-    Write-Host "============================================" -ForegroundColor Cyan
-    
-    # Esperar hasta que el usuario presione Ctrl+C
-    try {
-        while ($true) {
-            Start-Sleep -Seconds 1
-            
-            # Verificar si los procesos siguen activos
-            if ($backendProcess -and $backendProcess.HasExited) {
-                Write-Host " El backend se ha detenido inesperadamente" -ForegroundColor Yellow
-                break
-            }
-            if ($frontendProcess -and $frontendProcess.HasExited) {
-                Write-Host "El frontend se ha detenido inesperadamente" -ForegroundColor Yellow
-                break
-            }
-        }
-    }
-    catch [System.Management.Automation.PipelineStoppedException] {
-        # Ctrl+C presionado
-        Write-Host ""
-        Write-Host "Interrupción detectada..." -ForegroundColor Yellow
+    if (-not $OnlyBackend) {
+        Write-Host "  Frontend: $FrontendHealthUrl" -ForegroundColor Cyan
     }
 }
-finally {
-    Stop-Services -BackendProcess $backendProcess -FrontendProcess $frontendProcess
-    Write-Host ""
-    Write-Host "¡Hasta luego!" -ForegroundColor Green
+catch {
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    exit 1
 }

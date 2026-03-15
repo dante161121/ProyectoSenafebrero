@@ -113,12 +113,8 @@ class SessionManager {
     console.log(' SessionManager: Cerrando sesión...');
     
     this.endSession();
-    
-    if (typeof PathManager !== 'undefined' && PathManager.navigateToLogin) {
-      PathManager.navigateToLogin(message || 'Sesión cerrada correctamente.');
-    } else {
-      window.location.href = '../auth/login.html';
-    }
+
+    PathManager.navigateToLogin(message || 'Sesión cerrada correctamente.');
   }
 
   /**
@@ -187,16 +183,7 @@ class SessionManager {
    * @param {string} message 
    */
   static redirectToLogin(message = null) {
-
-    if (typeof PathManager !== 'undefined') {
-      PathManager.navigateToLogin(message);
-      return;
-    }
-
-    if (message) {
-      alert(message);
-    }
-    window.location.href = '../../components/auth/login.html';
+    PathManager.navigateToLogin(message);
   }
   
   /**
@@ -204,18 +191,8 @@ class SessionManager {
    */
   static redirectToDashboard(userType) {
     console.log('SessionManager: Redirigiendo usuario tipo:', userType);
-    
-    if (typeof PathManager !== 'undefined') {
-      PathManager.navigateToDashboard(userType);
-      return;
-    }
-    const dashboardUrls = {
-      empleado: '../empleado/dashboard-empleado.html',
-      administrador: '../admin/dashboard-admin.html'
-    };
-    const url = dashboardUrls[userType] || dashboardUrls.empleado;
-    console.log('SessionManager: Navegando a URL:', url);
-    window.location.href = url;
+
+    PathManager.navigateToDashboard(userType);
   }
   
   

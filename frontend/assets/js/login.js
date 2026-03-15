@@ -401,7 +401,7 @@
                 }
                 
                 this.elements.submitButton.innerHTML = `
-                    <span class="btn-icon"><i class="fas fa-sign-in-alt"></i></span>
+                    <span class="btn-icon"><i class="fas fa-right-to-bracket"></i></span>
                     <span class="btn-text">Iniciar Sesión</span>
                 `;
             }
@@ -452,7 +452,12 @@
                 console.log(' Login: PathManager no disponible, usando SessionManager');
                 SessionManager.redirectToDashboard(this.selectedRole);
             } else {
-                console.log(' Login: Usando fallback con rutas relativas');
+                console.log(' Login: Usando fallback final con PathManager global');
+                if (window.PathManager && window.PathManager.navigateToDashboard) {
+                    window.PathManager.navigateToDashboard(this.selectedRole);
+                    return;
+                }
+
                 const dashboardUrls = {
                     empleado: '../empleado/dashboard-empleado.html',
                     administrador: '../admin/dashboard-admin.html'

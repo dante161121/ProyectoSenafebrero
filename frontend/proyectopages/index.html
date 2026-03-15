@@ -20,7 +20,8 @@
   <link rel="icon" type="image/jpeg" href="../assets/img/icon.jpg">
   <!-- OJO SUPER IMPORTAMTE ================== temporalmente para que funcione con Vite -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="../assets/js/script.js" defer></script>
+  <script type="module" src="../assets/js/path-manager.js"></script>
+  <script type="module" src="../assets/js/script.js"></script>
 </head>
 
 <!-- FIN: ENCABEZADO DEL DOCUMENTO HTML       -->
@@ -51,8 +52,8 @@
           </ul>
         </li>
         <li class="auth-buttons-container">
-          <a href="../components/auth/registro.html" class="nav-btn auth-btn register-btn btn-animated">Registrarse</a>
-          <a href="../components/auth/login.html" class="nav-btn auth-btn login-btn btn-animated">Ingresar</a>
+          <a href="../components/auth/registro.html" data-route="register" class="nav-btn auth-btn register-btn btn-animated">Registrarse</a>
+          <a href="../components/auth/login.html" data-route="login" class="nav-btn auth-btn login-btn btn-animated">Ingresar</a>
         </li>
       </ul>
     </nav>

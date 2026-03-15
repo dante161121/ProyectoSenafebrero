@@ -14,7 +14,7 @@ router.use(protect);
  * @desc   
  * @access
  */
-router.get('/user/:userId', reportController.generateUserReport);
+router.get('/user/:userId', authorize('administrador'), reportController.generateUserReport);
 
 /**
  * @route 

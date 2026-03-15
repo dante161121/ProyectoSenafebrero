@@ -225,7 +225,13 @@ class RecoveryManager {
         if (typeof NotificationManager !== 'undefined') {
           NotificationManager.showToast('Contraseña actualizada exitosamente', 'success');
         }
-        setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        setTimeout(() => {
+          if (typeof PathManager !== 'undefined') {
+            PathManager.navigateToLogin();
+            return;
+          }
+          window.location.href = 'login.html';
+        }, 2000);
       })
       .catch(error => {
         console.error('Error al actualizar contraseña:', error);

@@ -4,13 +4,40 @@
  */
 
 class PathManager {
+  static getKnownRootFolders() {
+    return ['assets', 'components', 'proyectopages'];
+  }
+
+  static getRouteDefinitions() {
+    return {
+      home: { type: 'page', path: 'index.html' },
+      login: { type: 'component', path: 'auth/login.html' },
+      register: { type: 'component', path: 'auth/registro.html' },
+      recovery: { type: 'component', path: 'auth/recuperar-password.html' },
+      'dashboard-empleado': { type: 'component', path: 'empleado/dashboard-empleado.html' },
+      'dashboard-admin': { type: 'component', path: 'admin/dashboard-admin.html' }
+    };
+  }
+
   /**
    * @returns {string} 
    */
   static getBaseUrl() {
-    const protocol = window.location.protocol;
-    const host = window.location.host;
-    return `${protocol}//${host}/`;
+    const origin = window.location.origin;
+    const pathname = window.location.pathname.replace(/\\/g, '/');
+    const segments = pathname.split('/').filter(Boolean);
+    const knownRootFolders = this.getKnownRootFolders();
+    const rootFolderIndex = segments.findIndex(segment => {
+      return knownRootFolders.includes(segment.toLowerCase());
+    });
+
+    if (rootFolderIndex === -1) {
+      return `${origin}/`;
+    }
+
+    const baseSegments = segments.slice(0, rootFolderIndex);
+    const basePath = baseSegments.length > 0 ? `/${baseSegments.join('/')}/` : '/';
+    return `${origin}${basePath}`;
   }
 
   /**
@@ -24,14 +51,52 @@ class PathManager {
     console.log(' PathManager: Base URL detectada:', baseUrl);
     return baseUrl;
   }
+
+  static buildUrl(type, relativePath, section = null) {
+    const normalizedPath = relativePath.replace(/^\/+/, '');
+    let fullPath = '';
+
+    if (type === 'component') {
+      fullPath = `${this.getCurrentPathPrefix()}components/${normalizedPath}`;
+    } else if (type === 'page') {
+      fullPath = `${this.getCurrentPathPrefix()}proyectopages/${normalizedPath}`;
+    } else if (type === 'asset') {
+      fullPath = `${this.getCurrentPathPrefix()}assets/${normalizedPath}`;
+    } else {
+      throw new Error(`Tipo de ruta no soportado: ${type}`);
+    }
+
+    if (section) {
+      return `${fullPath}#${section}`;
+    }
+
+    return fullPath;
+  }
+
+  static getRouteUrl(routeName, options = {}) {
+    const routeDefinitions = this.getRouteDefinitions();
+    const route = routeDefinitions[routeName];
+
+    if (!route) {
+      throw new Error(`Ruta no registrada en PathManager: ${routeName}`);
+    }
+
+    return this.buildUrl(route.type, route.path, options.section || null);
+  }
+
+  static navigateToRoute(routeName, options = {}) {
+    const fullUrl = this.getRouteUrl(routeName, options);
+
+    console.log(' PathManager: Redirigiendo a ruta registrada:', routeName, fullUrl);
+    window.location.href = fullUrl;
+  }
   
   /**
    * @param {string} componentPath 
    * @returns {string} 
    */
   static getComponentPath(componentPath) {
-    const baseUrl = this.getCurrentPathPrefix();
-    const fullPath = `${baseUrl}components/${componentPath}`;
+    const fullPath = this.buildUrl('component', componentPath);
     console.log(' PathManager: Ruta de componente generada:', fullPath);
     return fullPath;
   }
@@ -41,8 +106,7 @@ class PathManager {
    * @returns {string} 
    */
   static getAssetPath(assetPath) {
-    const baseUrl = this.getCurrentPathPrefix();
-    const fullPath = `${baseUrl}assets/${assetPath}`;
+    const fullPath = this.buildUrl('asset', assetPath);
     console.log(' PathManager: Ruta de asset generada:', fullPath);
     return fullPath;
   }
@@ -52,8 +116,7 @@ class PathManager {
    * @returns {string} 
    */
   static getPagePath(pagePath) {
-    const baseUrl = this.getCurrentPathPrefix();
-    const fullPath = `${baseUrl}proyectopages/${pagePath}`;
+    const fullPath = this.buildUrl('page', pagePath);
     console.log(' PathManager: Ruta de página generada:', fullPath);
     return fullPath;
   }
@@ -64,16 +127,13 @@ class PathManager {
   static navigateToDashboard(userType) {
     console.log(' PathManager: Navegando al dashboard para usuario tipo:', userType);
     
-    const dashboardPaths = {
-      empleado: 'empleado/dashboard-empleado.html',
-      administrador: 'admin/dashboard-admin.html'
+    const dashboardRoutes = {
+      empleado: 'dashboard-empleado',
+      administrador: 'dashboard-admin'
     };
     
-    const path = dashboardPaths[userType] || dashboardPaths.empleado;
-    const fullUrl = this.getComponentPath(path);
-    
-    console.log(' PathManager: Redirigiendo a dashboard:', fullUrl);
-    window.location.href = fullUrl;
+    const routeName = dashboardRoutes[userType] || dashboardRoutes.empleado;
+    this.navigateToRoute(routeName);
   }
   
   /**
@@ -85,9 +145,7 @@ class PathManager {
       console.log(' PathManager: Mensaje:', message);
       alert(message);
     }
-    const fullUrl = this.getComponentPath('auth/login.html');
-    console.log(' PathManager: Redirigiendo a login:', fullUrl);
-    window.location.href = fullUrl;
+    this.navigateToRoute('login');
   }
   
   /**
@@ -95,17 +153,20 @@ class PathManager {
    */
   static navigateToRegister() {
     console.log(' PathManager: Navegando al registro');
-    const fullUrl = this.getComponentPath('auth/registro.html');
-    console.log(' PathManager: Redirigiendo a registro:', fullUrl);
-    window.location.href = fullUrl;
+    this.navigateToRoute('register');
+  }
+
+  static navigateToRecovery() {
+    console.log(' PathManager: Navegando a recuperación de contraseña');
+    this.navigateToRoute('recovery');
   }
   
   /**
    * Redirige al usuario a la página principal
    */
-  static navigateToHome() {
+  static navigateToHome(section = null) {
     console.log(' PathManager: Navegando al home');
-    const fullUrl = this.getPagePath('index.html');
+    const fullUrl = this.getRouteUrl('home', { section });
     console.log(' PathManager: Redirigiendo a home:', fullUrl);
     window.location.href = fullUrl;
   }
@@ -139,7 +200,44 @@ class PathManager {
     console.log('Dashboard Admin URL:', this.getComponentPath('admin/dashboard-admin.html'));
     console.log('Dashboard Empleado URL:', this.getComponentPath('empleado/dashboard-empleado.html'));
     console.log('Login URL:', this.getComponentPath('auth/login.html'));
+    console.log('Register URL:', this.getComponentPath('auth/registro.html'));
+    console.log('Recovery URL:', this.getComponentPath('auth/recuperar-password.html'));
+    console.log('Home URL:', this.getPagePath('index.html'));
     console.groupEnd();
+  }
+
+  static bindNavigation() {
+    if (this.navigationBound) {
+      return;
+    }
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('[data-route]');
+
+      if (!target) {
+        return;
+      }
+
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      if (target.target === '_blank' || target.hasAttribute('download')) {
+        return;
+      }
+
+      const routeName = target.dataset.route;
+      const section = target.dataset.section || null;
+
+      if (!routeName) {
+        return;
+      }
+
+      event.preventDefault();
+      this.navigateToRoute(routeName, { section });
+    });
+
+    this.navigationBound = true;
   }
 
   /**
@@ -180,6 +278,7 @@ class PathManager {
    */
   static init() {
     console.log(' PathManager: Inicializando...');
+    this.bindNavigation();
     window.addEventListener('popstate', (event) => {
       console.log(' PathManager: Cambio de ruta detectado:', event);
     });

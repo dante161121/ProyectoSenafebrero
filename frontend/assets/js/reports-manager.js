@@ -477,7 +477,7 @@ class ReportsManagerModule {
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
         } else {
             button.disabled = false;
-            button.innerHTML = '<i class="fas fa-file-download"></i> Generar Reporte';
+            button.innerHTML = '<i class="fas fa-file-arrow-down"></i> Generar Reporte';
         }
     }
 

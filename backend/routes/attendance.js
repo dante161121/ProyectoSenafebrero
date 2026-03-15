@@ -19,8 +19,7 @@ const {
 
 const { 
   protect, 
-  authorize, 
-  checkUserOwnership 
+  authorize 
 } = require('../middlewares/auth');
 
 const { 
@@ -31,9 +30,9 @@ const {
 router.use(protect);
 
 router.post('/', attendanceRules, validate, registerAttendance);
-router.get('/user/:userId', checkUserOwnership, getUserAttendance);
-router.get('/stats/weekly/:userId', checkUserOwnership, getWeeklyStats);
-router.get('/stats/monthly/:userId', checkUserOwnership, getMonthlyStats);
+router.get('/user/:userId', authorize('administrador'), getUserAttendance);
+router.get('/stats/weekly/:userId', authorize('administrador'), getWeeklyStats);
+router.get('/stats/monthly/:userId', authorize('administrador'), getMonthlyStats);
 router.get('/all', authorize('administrador'), getAllAttendance);
 router.delete('/:id', authorize('administrador'), deleteAttendance);
 

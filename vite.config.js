@@ -1,11 +1,22 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
+const htmlEntries = {
+  home: resolve(__dirname, 'frontend/proyectopages/index.html'),
+  login: resolve(__dirname, 'frontend/components/auth/login.html'),
+  register: resolve(__dirname, 'frontend/components/auth/registro.html'),
+  recovery: resolve(__dirname, 'frontend/components/auth/recuperar-password.html'),
+  employeeDashboard: resolve(__dirname, 'frontend/components/empleado/dashboard-empleado.html'),
+  adminDashboard: resolve(__dirname, 'frontend/components/admin/dashboard-admin.html')
+}
+
 export default defineConfig({
   root: 'frontend',
+  appType: 'mpa',
   
   server: {
     port: 3000,
+    strictPort: true,
     open: '/proyectopages/index.html',
     host: true,
     fs: {
@@ -30,7 +41,10 @@ export default defineConfig({
   
   build: {
     outDir: '../dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      input: htmlEntries
+    }
   },
   
   assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.webp', '**/*.gif'],

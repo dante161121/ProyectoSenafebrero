@@ -202,8 +202,8 @@ class RealTimeManagerModule {
     }
     getActivityIcon(type) {
         const icons = {
-            'entry': '<i class="fas fa-sign-in-alt"></i>',
-            'exit': '<i class="fas fa-sign-out-alt"></i>',
+            'entry': '<i class="fas fa-right-to-bracket"></i>',
+            'exit': '<i class="fas fa-right-from-bracket"></i>',
             'break': '<i class="fas fa-coffee"></i>',
             'alert': '<i class="fas fa-exclamation-triangle"></i>',
             'update': '<i class="fas fa-sync-alt"></i>'

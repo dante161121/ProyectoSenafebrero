@@ -284,6 +284,10 @@ class RegistroManager {
         );
 
         setTimeout(() => {
+          if (typeof PathManager !== 'undefined') {
+            PathManager.navigateToLogin();
+            return;
+          }
           window.location.href = 'login.html';
         }, 2000);
       } else {
@@ -354,11 +358,11 @@ class RegistroManager {
     if (element) {
       const icon = element.querySelector('i');
       if (isValid) {
-        icon.className = 'fas fa-check-circle';
+        icon.className = 'fas fa-circle-check';
         element.classList.add('requirement-met');
         element.classList.remove('requirement-failed');
       } else {
-        icon.className = 'fas fa-times-circle';
+        icon.className = 'fas fa-circle-xmark';
         element.classList.add('requirement-failed');
         element.classList.remove('requirement-met');
       }

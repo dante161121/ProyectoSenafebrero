@@ -53,7 +53,13 @@ class AdminDashboard extends BaseDashboard {
     }
     
     if (this.newEmployeeBtn) {
-      this.newEmployeeBtn.addEventListener('click', () => window.location.href = 'registro.html');
+      this.newEmployeeBtn.addEventListener('click', () => {
+        if (typeof PathManager !== 'undefined') {
+          PathManager.navigateToRegister();
+          return;
+        }
+        window.location.href = '../auth/registro.html';
+      });
     }
     
     if (this.reportsBtn) {
@@ -155,13 +161,15 @@ class AdminDashboard extends BaseDashboard {
   
   async viewEmployeeDetails(employeeId) {
     try {
-      const [userRes, attRes] = await Promise.all([
+      const [userRes, attRes, statsRes] = await Promise.all([
         fetch(`/api/users/${employeeId}`, { headers: this._authHeaders() }),
-        fetch(`/api/attendance/all?userId=${employeeId}&limit=100`, { headers: this._authHeaders() })
+        fetch(`/api/attendance/all?userId=${employeeId}&limit=100`, { headers: this._authHeaders() }),
+        fetch(`/api/stats/dashboard?userId=${employeeId}`, { headers: this._authHeaders() })
       ]);
 
       const userResult = await userRes.json();
       const attResult = await attRes.json();
+      const statsResult = await statsRes.json();
 
       const employee = userResult.data;
 
@@ -181,6 +189,7 @@ class AdminDashboard extends BaseDashboard {
         date: r.date || new Date(r.timestamp).toLocaleDateString('es-ES'),
         time: r.time || new Date(r.timestamp).toLocaleTimeString('es-ES')
       })) : [];
+      const employeeStats = statsResult.success ? statsResult.data : null;
       
       const modal = document.createElement('div');
       modal.className = 'employee-modal';
@@ -197,6 +206,11 @@ class AdminDashboard extends BaseDashboard {
             <p><strong>Horario:</strong> ${employee.horarioAsignado || 'No especificado'}</p>
             <p><strong>Fecha de Ingreso:</strong> ${employee.fechaIngreso || 'No especificado'}</p>
             <p><strong>Teléfono:</strong> ${employee.telefono || 'No especificado'}</p>
+          </div>
+
+          <h4>Estadísticas del Empleado</h4>
+          <div class="employee-stats">
+            ${this.generateEmployeeStatsHTML(employeeStats)}
           </div>
           
           <h4>Registros de Asistencia</h4>
@@ -254,6 +268,21 @@ class AdminDashboard extends BaseDashboard {
     html += '</tbody></table>';
     
     return html;
+  }
+
+  generateEmployeeStatsHTML(stats) {
+    if (!stats || !stats.hoy || !stats.semana || !stats.mes) {
+      return '<p>No hay estadísticas disponibles para este empleado.</p>';
+    }
+
+    return `
+      <div class="employee-stats-grid">
+        <p><strong>Tiempo trabajado hoy:</strong> ${stats.hoy.estadisticas?.tiempoTotal?.formato || '00:00'}</p>
+        <p><strong>Horas extras hoy:</strong> ${stats.hoy.estadisticas?.horasExtras?.total?.formato || '00:00'}</p>
+        <p><strong>Promedio semanal:</strong> ${(stats.semana.promedioHorasDiarias || 0).toFixed(1)}h</p>
+        <p><strong>Días trabajados del mes:</strong> ${stats.mes.diasTrabajados || 0}</p>
+      </div>
+    `;
   }
   
   async loadAttendanceRecords() {

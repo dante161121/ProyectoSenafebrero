@@ -164,6 +164,10 @@ class BaseDashboard {
       if (this.clockTimer) {
         clearInterval(this.clockTimer);
       }
+      if (typeof PathManager !== 'undefined') {
+        PathManager.navigateToLogin();
+        return;
+      }
       window.location.href = '../../components/auth/login.html';
     }
   }
@@ -174,6 +178,10 @@ class BaseDashboard {
   redirectToLogin(message) {
     if (typeof SessionManager !== 'undefined') {
       SessionManager.redirectToLogin(message);
+      return;
+    }
+    if (typeof PathManager !== 'undefined') {
+      PathManager.navigateToLogin(message);
       return;
     }
     alert(message || 'Debe iniciar sesión para acceder a esta página');

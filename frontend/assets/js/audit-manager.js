@@ -310,7 +310,7 @@ class AuditManagerModule {
         statsContainer.innerHTML = `
             <div class="audit-stat">
                 <div class="stat-icon success">
-                    <i class="fas fa-check-circle"></i>
+                    <i class="fas fa-circle-check"></i>
                 </div>
                 <div class="stat-content">
                     <div class="stat-value">${stats.success || 0}</div>
@@ -328,7 +328,7 @@ class AuditManagerModule {
             </div>
             <div class="audit-stat">
                 <div class="stat-icon danger">
-                    <i class="fas fa-times-circle"></i>
+                    <i class="fas fa-circle-xmark"></i>
                 </div>
                 <div class="stat-content">
                     <div class="stat-value">${stats.error || 0}</div>
@@ -694,8 +694,8 @@ class AuditManagerModule {
 
     getLogIcon(type) {
         const icons = {
-            login: '<i class="fas fa-sign-in-alt"></i>',
-            logout: '<i class="fas fa-sign-out-alt"></i>',
+            login: '<i class="fas fa-right-to-bracket"></i>',
+            logout: '<i class="fas fa-right-from-bracket"></i>',
             create: '<i class="fas fa-plus"></i>',
             update: '<i class="fas fa-edit"></i>',
             delete: '<i class="fas fa-trash"></i>',

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const StatsController = require('../controllers/StatsController');
-const { protect } = require('../middlewares/auth');
+const { protect, authorize } = require('../middlewares/auth');
 
 // REGISTRO DE ASISTENCIA 
 
@@ -23,7 +23,7 @@ router.post('/attendance', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/dashboard', protect, async (req, res) => {
+router.get('/dashboard', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerDashboard(req, res);
 });
 
@@ -33,7 +33,7 @@ router.get('/dashboard', protect, async (req, res) => {
  * @access 
  * @returns 
  */
-router.get('/today', protect, async (req, res) => {
+router.get('/today', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerEstadisticasHoy(req, res);
 });
 
@@ -43,7 +43,7 @@ router.get('/today', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/weekly', protect, async (req, res) => {
+router.get('/weekly', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerEstadisticasSemanales(req, res);
 });
 
@@ -53,7 +53,7 @@ router.get('/weekly', protect, async (req, res) => {
  * @access 
  * @returns 
  */
-router.get('/monthly', protect, async (req, res) => {
+router.get('/monthly', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerEstadisticasMensuales(req, res);
 });
 
@@ -66,7 +66,7 @@ router.get('/monthly', protect, async (req, res) => {
  * @query   
  * @returns 
  */
-router.get('/charts', protect, async (req, res) => {
+router.get('/charts', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerDatosGraficas(req, res);
 });
 
@@ -78,7 +78,7 @@ router.get('/charts', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/active-session', protect, async (req, res) => {
+router.get('/active-session', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerSesionActiva(req, res);
 });
 
@@ -89,7 +89,7 @@ router.get('/active-session', protect, async (req, res) => {
  * @query   
  * @returns 
  */
-router.get('/sessions', protect, async (req, res) => {
+router.get('/sessions', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerHistoricoSesiones(req, res);
 });
 
@@ -99,7 +99,7 @@ router.get('/sessions', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/sessions/:sessionId', protect, async (req, res) => {
+router.get('/sessions/:sessionId', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerDetalleSesion(req, res);
 });
 
@@ -112,7 +112,7 @@ router.get('/sessions/:sessionId', protect, async (req, res) => {
  * @body    
  * @returns 
  */
-router.post('/migrate', protect, async (req, res) => {
+router.post('/migrate', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.migrarRegistros(req, res);
 });
 
@@ -122,7 +122,7 @@ router.post('/migrate', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/validate', protect, async (req, res) => {
+router.get('/validate', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.validarIntegridad(req, res);
 });
 
@@ -134,7 +134,7 @@ router.get('/validate', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/labor-law-info', protect, async (req, res) => {
+router.get('/labor-law-info', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerInfoLegislacion(req, res);
 });
 
@@ -145,7 +145,7 @@ router.get('/labor-law-info', protect, async (req, res) => {
  * @body    
  * @returns 
  */
-router.post('/calculate-overtime', protect, async (req, res) => {
+router.post('/calculate-overtime', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.calcularRecargos(req, res);
 });
 
@@ -157,7 +157,7 @@ router.post('/calculate-overtime', protect, async (req, res) => {
  * @access  
  * @returns 
  */
-router.get('/system-performance', protect, async (req, res) => {
+router.get('/system-performance', protect, authorize('administrador'), async (req, res) => {
     return await StatsController.obtenerRendimientoSistema(req, res);
 });
 

@@ -6,6 +6,10 @@ const DailyStats = require('../models/DailyStats');
 
 class StatsController {
 
+    static obtenerUsuarioObjetivo(req) {
+        return req.query.userId || req.params.userId || req.user.id;
+    }
+
     static async registrarAsistencia(req, res) {
         try {
             const { type, timestamp, location } = req.body;
@@ -49,7 +53,7 @@ class StatsController {
 
     static async obtenerDashboard(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             console.log(` Generando dashboard para usuario: ${userId}`);
 
             const resumen = await TimeCalculationService.obtenerResumenDashboard(userId);
@@ -72,7 +76,7 @@ class StatsController {
     
     static async obtenerEstadisticasHoy(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const estadisticas = await TimeCalculationService.obtenerEstadisticasHoy(userId);
 
             res.json({
@@ -92,7 +96,7 @@ class StatsController {
 
     static async obtenerEstadisticasSemanales(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const estadisticas = await TimeCalculationService.obtenerEstadisticasSemanales(userId);
 
             res.json({
@@ -112,7 +116,7 @@ class StatsController {
 
     static async obtenerEstadisticasMensuales(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const estadisticas = await TimeCalculationService.obtenerEstadisticasMensuales(userId);
 
             res.json({
@@ -133,7 +137,7 @@ class StatsController {
 
     static async obtenerDatosGraficas(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const { days = 7 } = req.query;
 
             const datos = await TimeCalculationService.obtenerDatosGraficas(
@@ -159,7 +163,7 @@ class StatsController {
 
     static async obtenerSesionActiva(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const sesion = await TimeCalculationService.obtenerSesionActiva(userId);
 
             res.json({
@@ -180,7 +184,7 @@ class StatsController {
 
     static async obtenerHistoricoSesiones(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const { 
                 fechaInicio, 
                 fechaFin, 
@@ -234,12 +238,14 @@ class StatsController {
     static async obtenerDetalleSesion(req, res) {
         try {
             const { sessionId } = req.params;
-            const userId = req.user.id;
+            const userId = req.query.userId;
+            const filtro = { _id: sessionId };
 
-            const sesion = await WorkSession.findOne({
-                _id: sessionId,
-                userId
-            });
+            if (userId) {
+                filtro.userId = userId;
+            }
+
+            const sesion = await WorkSession.findOne(filtro);
 
             if (!sesion) {
                 return res.status(404).json({
@@ -277,7 +283,7 @@ class StatsController {
 
     static async migrarRegistros(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             const { fechaInicio, fechaFin } = req.body;
 
             if (!fechaInicio || !fechaFin) {
@@ -313,7 +319,7 @@ class StatsController {
 
     static async validarIntegridad(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
             
             const reporte = await TimeCalculationService.validarIntegridadDatos(userId);
 
@@ -427,7 +433,7 @@ class StatsController {
      */
     static async obtenerRendimientoSistema(req, res) {
         try {
-            const userId = req.user.id;
+            const userId = StatsController.obtenerUsuarioObjetivo(req);
 
             const [
                 totalSesiones,

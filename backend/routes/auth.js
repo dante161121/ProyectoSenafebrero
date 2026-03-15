@@ -6,21 +6,19 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-// Permite procesar formularios form-data sin archivos (ej. Postman form-data)
+// Permite procesar formularios form-data sin archivos 
 const parseFormData = multer().none();
 
-// Parsers combinados para aceptar JSON, x-www-form-urlencoded y form-data
+// Parsers para aceptar JSON, y form-data
 const bodyParsers = [
   express.json(),
   express.urlencoded({ extended: true }),
   parseFormData,
-  // Intenta parsear texto plano que contenga JSON
   (req, _res, next) => {
     if (typeof req.body === 'string') {
       try {
         req.body = JSON.parse(req.body);
       } catch (_e) {
-        // si no es JSON, se deja tal cual
       }
     }
     next();
@@ -30,19 +28,15 @@ const bodyParsers = [
 // Normaliza campos comunes que llegan con nombres distintos (email/correo, nombre, documento)
 const normalizeAuthFields = (req, _res, next) => {
   if (req.body) {
-    // Email
     if (!req.body.correoElectronico) {
       req.body.correoElectronico = req.body.email || req.body.correo || req.body.user || req.body.username;
     }
-    // Password
     if (!req.body.password && req.body.pass) {
       req.body.password = req.body.pass;
     }
-    // Nombre completo
     if (!req.body.nombreCompleto) {
       req.body.nombreCompleto = req.body.nombre || req.body.fullName || req.body.nombre_usuario;
     }
-    // Documento
     if (!req.body.numeroDocumento) {
       req.body.numeroDocumento = req.body.documento || req.body.doc || req.body.cc;
     }
