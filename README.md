@@ -27,7 +27,7 @@ Tecnología
 **date-fns** | ^2.30.0 | Librería para manipulación de fechas |
 
 
-###  Autenticación y Autorización
+### Autenticación y Autorización
 
 **Registro de usuarios**: Empleados y administradores con validación completa de datos
 **Inicio de sesión seguro**: Autenticación JWT con tokens seguros
@@ -92,25 +92,5 @@ cd ..
 cd .\ProyectoFinalSEN
 npm run start:both
 ```
-
-Este comando deja los puertos reales fijos del proyecto:
-
-- Frontend: http://localhost:3000/proyectopages/index.html
-- Backend: http://localhost:5000/health
-
-El script de arranque ahora hace esto automáticamente:
-
-- Reutiliza backend y frontend si ya están sanos
-- Libera solo los puertos esperados del proyecto cuando hace falta
-- Evita que Vite cambie silenciosamente de 3000 a 3001
-
-Comandos útiles:
-
-```bash
-npm run ports:status
-npm run stop:both
-```
-
-##  Desarrollador
  
 | **Repositorio** ProyectoFinalSEN https://github.com/mariangeldante2563/ProyectoFinalSEN

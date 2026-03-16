@@ -109,16 +109,31 @@ function Wait-ForUrl {
     return $false
 }
 
+function Remove-ExistingServiceJobs {
+    param([string]$JobName)
+
+    Get-Job -Name $JobName -ErrorAction SilentlyContinue |
+        Remove-Job -Force -ErrorAction SilentlyContinue
+}
+
 function Start-BackendProcess {
     Write-Host "Backend: iniciando en puerto $BackendPort..." -ForegroundColor Yellow
-    $command = "Set-Location '$BackendPath'; node server.js"
-    Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-Command", $command | Out-Null
+    Remove-ExistingServiceJobs -JobName 'inoutmanager-backend'
+    Start-Job -Name 'inoutmanager-backend' -ScriptBlock {
+        param($BackendPath)
+        Set-Location $BackendPath
+        node server.js
+    } -ArgumentList $BackendPath | Out-Null
 }
 
 function Start-FrontendProcess {
     Write-Host "Frontend: iniciando en puerto $PrimaryFrontendPort..." -ForegroundColor Yellow
-    $command = "Set-Location '$ProjectRoot'; npm run start:frontend"
-    Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-Command", $command | Out-Null
+    Remove-ExistingServiceJobs -JobName 'inoutmanager-frontend'
+    Start-Job -Name 'inoutmanager-frontend' -ScriptBlock {
+        param($ProjectRoot)
+        Set-Location $ProjectRoot
+        npm run start:frontend
+    } -ArgumentList $ProjectRoot | Out-Null
 }
 
 function Ensure-Backend {
@@ -216,6 +231,42 @@ try {
     }
     if (-not $OnlyBackend) {
         Write-Host "  Frontend: $FrontendHealthUrl" -ForegroundColor Cyan
+    }
+
+    $serviceJobNames = @()
+    if (-not $OnlyFrontend) {
+        $serviceJobNames += 'inoutmanager-backend'
+    }
+    if (-not $OnlyBackend) {
+        $serviceJobNames += 'inoutmanager-frontend'
+    }
+
+    if ($serviceJobNames.Count -gt 0) {
+        Write-Host "" 
+        Write-Host "Servicios ejecutándose en la terminal integrada. Presiona Ctrl+C para detener este arranque." -ForegroundColor Yellow
+
+        while ($true) {
+            foreach ($jobName in $serviceJobNames) {
+                $job = Get-Job -Name $jobName -ErrorAction SilentlyContinue
+
+                if ($job) {
+                    Receive-Job -Job $job -Keep -ErrorAction SilentlyContinue | Out-Host
+                }
+            }
+
+            $inactiveJobs = @(
+                $serviceJobNames | Where-Object {
+                    $job = Get-Job -Name $_ -ErrorAction SilentlyContinue
+                    -not $job -or $job.State -ne 'Running'
+                }
+            )
+
+            if ($inactiveJobs.Count -gt 0) {
+                throw "Servicios detenidos inesperadamente: $($inactiveJobs -join ', ')"
+            }
+
+            Start-Sleep -Seconds 1
+        }
     }
 }
 catch {
